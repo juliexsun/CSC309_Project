@@ -1,0 +1,148 @@
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum RoleType {
+  regular
+  cashier
+  manager
+  superuser
+}
+
+enum TransactionType {
+  purchase
+  redemption
+  adjustment
+  event
+  transfer
+}
+
+enum PromotionType {
+  automatic
+  onetime @map("one-time")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  utorid    String   @unique
+  name      String
+  email     String   @unique
+  password  String
+  birthday  String?
+  role      RoleType @default(regular)
+  points    Int      @default(0)
+  verified  Boolean  @default(false)
+  suspicious Boolean @default(false)
+  avatarUrl String?
+  lastLogin DateTime?
+  createdAt DateTime @default(now())
+
+  passwordResets PasswordReset[]
+  
+  // Transactions this user is the subject of
+  transactions      Transaction[] @relation("UserTransactions")
+  // Transactions this user created (e.g., as cashier/manager)
+  createdTransactions Transaction[] @relation("CreatedBy")
+
+  // Add matching relation names for join tables
+  organizedEvents EventOrganizer[] @relation("EventOrganizers")
+  guestEvents     EventGuest[]     @relation("EventGuests")
+
+  // One-time promotions this user has used
+  usedPromotions  Promotion[] @relation("UsedPromotions")
+}
+
+model PasswordReset {
+  id        Int      @id @default(autoincrement())
+  token     String   @unique
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  consumedAt DateTime?
+  createdAt DateTime @default(now())
+}
+
+model Transaction {
+  id         Int             @id @default(autoincrement())
+  type       TransactionType
+  amount     Int             // Point value (+ or -)
+  spent      Float?          // Dollar value for 'purchase'
+  remark     String?
+  suspicious Boolean         @default(false)
+  processed  Boolean         @default(false) // For redemption type
+  createdAt  DateTime        @default(now())
+  
+  // The user this transaction applies to
+  userId     Int
+  user       User    @relation("UserTransactions", fields: [userId], references: [id], onDelete: Cascade)
+  
+  // The user who created this transaction (cashier, manager, or user themselves)
+  createdById Int
+  createdBy   User    @relation("CreatedBy", fields: [createdById], references: [id], onDelete: NoAction)
+  
+  // Used for 'adjustment', 'transfer', 'redemption', 'event'
+  relatedId  Int?
+
+  // Promotions applied to this transaction
+  promotions Promotion[] @relation("TransactionPromotions")
+}
+
+model Promotion {
+  id          Int           @id @default(autoincrement())
+  name        String
+  description String
+  type        PromotionType
+  startTime   DateTime
+  endTime     DateTime
+  minSpending Float?
+  rate        Float?
+  points      Int?
+  createdAt   DateTime      @default(now())
+
+  transactions Transaction[] @relation("TransactionPromotions")
+  
+  // Users who have used this (for 'onetime' promotions)
+  usedBy       User[]        @relation("UsedPromotions")
+}
+
+model Event {
+  id              Int      @id @default(autoincrement())
+  name            String
+  description     String
+  location        String
+  startTime       DateTime
+  endTime         DateTime
+  capacity        Int?
+  pointsAllocated Int
+  pointsAwarded   Int      @default(0) // Points already given out
+  published       Boolean  @default(false)
+  createdAt       DateTime @default(now())
+
+  organizers EventOrganizer[]
+  guests     EventGuest[]
+}
+
+// Explicit many-to-many join table for Event <-> User (Organizers)
+model EventOrganizer {
+  eventId Int
+  event   Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  userId  Int
+  user    User  @relation("EventOrganizers", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([eventId, userId])
+}
+
+// Explicit many-to-many join table for Event <-> User (Guests)
+model EventGuest {
+  eventId Int
+  event   Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  userId  Int
+  user    User  @relation("EventGuests", fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@id([eventId, userId])
+}
