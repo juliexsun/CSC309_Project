@@ -34,7 +34,13 @@ app.use(express.json());
 // --- Global Middleware ---
 
 // Enable Cross-Origin Resource Sharing
-app.use(cors());
+// Set up cors to allow requests from your React frontend
+app.use(cors({
+origin: 'http://localhost:5173',
+methods: ['GET', 'POST', 'PUT', 'DELETE'],
+allowedHeaders: ['Content-Type', 'Authorization'],
+credentials: true
+}));
 
 // Serve static files from the 'uploads' directory
 // This allows accessing avatar images via URLs like /uploads/avatars/image.png
