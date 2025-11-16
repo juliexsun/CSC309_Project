@@ -13,7 +13,7 @@ const Login = () => {
     setError("");
 
     try {
-      const response = await fetch("http://localhost:3001/auth/tokens", {
+      const response = await fetch("http://localhost:3000/auth/tokens", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -36,6 +36,7 @@ const Login = () => {
 
     } catch (err) {
       console.error(err);
+      console.log("Network error:", err);
       setError("Network error");
     }
   };

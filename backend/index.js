@@ -36,7 +36,7 @@ app.use(express.json());
 // Enable Cross-Origin Resource Sharing
 // Set up cors to allow requests from your React frontend
 app.use(cors({
-origin: 'http://localhost:3000',
+origin: 'http://localhost:5173',
 methods: ['GET', 'POST', 'PUT', 'DELETE'],
 allowedHeaders: ['Content-Type', 'Authorization'],
 credentials: true
