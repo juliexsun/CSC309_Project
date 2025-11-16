@@ -6,10 +6,9 @@ import Login from './pages/Login';
 const App = () => {
     return <BrowserRouter>
         <Routes>
-          {/* 🌟 访问 "/" 自动跳去 "/login" */}
+        
           <Route path="/" element={<Navigate to="/login" replace />} />
-
-          {/* Login 页面 */}
+    
           <Route path="/login" element={<Login />} />
             
         </Routes>

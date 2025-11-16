@@ -28,10 +28,10 @@ const Login = () => {
       }
 
       const data = await response.json();
-      // 保存 token
+      // save token
       localStorage.setItem("token", data.token);
 
-      // 登录成功后跳转
+      // After successful login, navigate to the home page
       navigate("/");
 
     } catch (err) {
