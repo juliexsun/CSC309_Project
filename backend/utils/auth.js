@@ -1,6 +1,7 @@
 'use strict';
 
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
@@ -10,14 +11,22 @@ if (!JWT_SECRET) {
 }
 
 /**
- * Compares two plaintext passwords.
+ * Compares plaintext password with hashed password.
  * @param {string} inputPassword - The plaintext password from user input.
- * @param {string} storedPassword - The plaintext password from the database.
- * @returns {boolean} - True if the passwords match exactly.
+ * @param {string} storedPassword - The hashed password from the database.
+ * @returns {boolean} - True if the passwords match.
  */
 const comparePassword = (inputPassword, storedPassword) => {
-  // Direct string comparison for plaintext
-  return inputPassword === storedPassword;
+  return bcrypt.compareSync(inputPassword, storedPassword);
+};
+
+/**
+ * Hashes a plaintext password.
+ * @param {string} password - The plaintext password.
+ * @returns {string} - The hashed password.
+ */
+const hashPassword = (password) => {
+  return bcrypt.hashSync(password, 10);
 };
 
 /**
@@ -43,6 +52,7 @@ const getExpirationDate = (days) => {
 
 module.exports = {
   comparePassword,
+  hashPassword,
   signToken,
   getExpirationDate,
 };

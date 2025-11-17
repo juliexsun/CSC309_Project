@@ -4,6 +4,7 @@ const prisma = require('../db/prisma');
 const { v4: uuidv4 } = require('uuid');
 const {
   comparePassword,
+  hashPassword,
   signToken,
   getExpirationDate,
 } = require('../utils/auth');
@@ -144,7 +145,7 @@ const performReset = async (req, res, next) => {
         prisma.user.update({
             where: { id: resetRequest.userId },
             data: {
-              password: password,
+              password: hashPassword(password),
             },
         }),
         prisma.passwordReset.update({

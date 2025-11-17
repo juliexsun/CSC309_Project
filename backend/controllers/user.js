@@ -9,7 +9,7 @@ const {
   Forbidden,
   BadRequest,
 } = require('../utils/errors');
-const { comparePassword } = require('../utils/auth');
+const { comparePassword, hashPassword } = require('../utils/auth');
 
 
 /**
@@ -21,13 +21,13 @@ const createUser = async (req, res, next) => {
     const { utorid, name, email } = req.body;
     const tempPassword = uuidv4() + Date.now();
 
-    // Create the user
+    // Create the user with hashed password
     const user = await prisma.user.create({
       data: {
         utorid,
         name,
         email,
-        password: tempPassword,
+        password: hashPassword(tempPassword),
         verified: false,
       },
     });
@@ -404,7 +404,7 @@ const updatePassword = async (req, res, next) => {
 
     await prisma.user.update({
       where: { id: userId },
-      data: { password: newPassword },
+      data: { password: hashPassword(newPassword) },
     });
 
     res.status(200).json({ message: 'Password updated successfully.' });
