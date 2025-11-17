@@ -5,6 +5,10 @@ import Layout from './components/Layout';
 import RequireAuth from './components/RequireAuth';
 import Login from './pages/Login';
 import RegularDashboard from './pages/RegularDashboard';
+import CashierDashboard from './pages/CashierDashboard';
+import ScanQRPage from './pages/ScanQRPage';
+import ManualAwardPage from './pages/ManualAwardPage';
+import CashierTransactionsPage from './pages/CashierTransactionsPage';
 import CashierHome from './pages/CashierHome';
 import ManagerHome from './pages/ManagerHome';
 import PromotionsPage from './pages/PromotionsPage';
@@ -35,7 +39,10 @@ const App = () => {
               <Route path="/transfer" element={<TransferPage />} />
               
               {/* Cashier routes */}
-              <Route path="/cashier" element={<CashierHome />} />
+              <Route path="/cashier" element={<CashierDashboard />} />
+              <Route path="/cashier/scan" element={<ScanQRPage />} />
+              <Route path="/cashier/manual-award" element={<ManualAwardPage />} />
+              <Route path="/cashier/transactions" element={<CashierTransactionsPage />} />
               
               {/* Manager/Superuser routes */}
               <Route path="/manager" element={<ManagerHome />} />

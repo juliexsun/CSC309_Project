@@ -35,9 +35,10 @@ const Navbar = () => {
     if (role === 'cashier') {
       return (
         <>
-          <Link to="/cashier" className="nav-link">Home</Link>
-          <Link to="/cashier/transaction" className="nav-link">Create Transaction</Link>
-          <Link to="/cashier/redemption" className="nav-link">Process Redemption</Link>
+          <Link to="/cashier" className="nav-link">Dashboard</Link>
+          <Link to="/cashier/scan" className="nav-link">Scan QR</Link>
+          <Link to="/cashier/manual-award" className="nav-link">Manual Award</Link>
+          <Link to="/cashier/transactions" className="nav-link">Transactions</Link>
         </>
       );
     }

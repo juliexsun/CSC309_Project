@@ -34,6 +34,17 @@ export const userAPI = {
   getUserById: (userId) => 
     apiClient.get(`/users/${userId}`),
   
+  // Get user by UTORid (for cashier lookup)
+  getUserByUtorid: (utorid) => 
+    apiClient.get(`/users`, { params: { utorid, limit: 1 } })
+      .then(res => {
+        const users = res.data?.results || res.data || [];
+        if (users.length === 0) {
+          throw new Error('User not found');
+        }
+        return { data: users[0] };
+      }),
+  
   // Create new user (cashier/manager/superuser only)
   createUser: (userData) => 
     apiClient.post('/users', userData),
@@ -64,6 +75,13 @@ export const transactionAPI = {
   // Create transfer transaction
   createTransfer: (toUserId, amount) => 
     apiClient.post(`/users/${toUserId}/transactions`, { amount }),
+  
+  // Award points (cashier/manager/superuser only)
+  awardPoints: (data) => 
+    apiClient.post('/transactions', {
+      ...data,
+      type: 'award'
+    }),
   
   // Update transaction (manager/superuser only)
   updateTransaction: (transactionId, data) => 
