@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import Layout from './components/Layout';
 import RequireAuth from './components/RequireAuth';
+import RequireRole from './components/RequireRole';
 import Login from './pages/Login';
 import RegularDashboard from './pages/RegularDashboard';
 import CashierDashboard from './pages/CashierDashboard';
@@ -38,28 +39,34 @@ const App = () => {
               <Route path="/profile" element={<ProfilePage />} />
               
               {/* Regular user routes */}
-              <Route path="/dashboard" element={<RegularDashboard />} />
-              <Route path="/promotions" element={<PromotionsPage />} />
-              <Route path="/events" element={<EventsListPage />} />
-              <Route path="/events/:eventId" element={<EventDetailPage />} />
-              <Route path="/transactions" element={<MyTransactionsPage />} />
-              <Route path="/my-qr" element={<MyQRCodePage />} />
-              <Route path="/transfer" element={<TransferPage />} />
-              <Route path="/redemptions" element={<MyRedemptionsPage />} />
-              <Route path="/redemptions/create" element={<CreateRedemptionPage />} />
+              <Route element={<RequireRole allowedRoles={['regular', 'cashier', 'manager', 'superuser']} />}>
+                <Route path="/dashboard" element={<RegularDashboard />} />
+                <Route path="/promotions" element={<PromotionsPage />} />
+                <Route path="/events" element={<EventsListPage />} />
+                <Route path="/events/:eventId" element={<EventDetailPage />} />
+                <Route path="/transactions" element={<MyTransactionsPage />} />
+                <Route path="/my-qr" element={<MyQRCodePage />} />
+                <Route path="/transfer" element={<TransferPage />} />
+                <Route path="/redemptions" element={<MyRedemptionsPage />} />
+                <Route path="/redemptions/create" element={<CreateRedemptionPage />} />
+              </Route>
               
               {/* Cashier routes */}
-              <Route path="/cashier" element={<CashierDashboard />} />
-              <Route path="/cashier/scan" element={<ScanQRPage />} />
-              <Route path="/cashier/manual-award" element={<ManualAwardPage />} />
-              <Route path="/cashier/transactions" element={<CashierTransactionsPage />} />
+              <Route element={<RequireRole allowedRoles={['cashier', 'manager', 'superuser']} />}>
+                <Route path="/cashier" element={<CashierDashboard />} />
+                <Route path="/cashier/scan" element={<ScanQRPage />} />
+                <Route path="/cashier/manual-award" element={<ManualAwardPage />} />
+                <Route path="/cashier/transactions" element={<CashierTransactionsPage />} />
+              </Route>
               
               {/* Manager/Superuser routes */}
-              <Route path="/manager" element={<ManagerDashboard />} />
-              <Route path="/manager/users" element={<ManageUsersPage />} />
-              <Route path="/manager/events" element={<ManageEventsPage />} />
-              <Route path="/manager/promotions" element={<ManagePromotionsPage />} />
-              <Route path="/manager/transactions" element={<CashierTransactionsPage />} />
+              <Route element={<RequireRole allowedRoles={['manager', 'superuser']} />}>
+                <Route path="/manager" element={<ManagerDashboard />} />
+                <Route path="/manager/users" element={<ManageUsersPage />} />
+                <Route path="/manager/events" element={<ManageEventsPage />} />
+                <Route path="/manager/promotions" element={<ManagePromotionsPage />} />
+                <Route path="/manager/transactions" element={<CashierTransactionsPage />} />
+              </Route>
             </Route>
             
             {/* Default redirect */}
