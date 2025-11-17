@@ -1,18 +1,56 @@
 import './App.css';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext';
+import Layout from './components/Layout';
+import RequireAuth from './components/RequireAuth';
 import Login from './pages/Login';
-
+import RegularDashboard from './pages/RegularDashboard';
+import CashierHome from './pages/CashierHome';
+import ManagerHome from './pages/ManagerHome';
+import PromotionsPage from './pages/PromotionsPage';
+import EventsListPage from './pages/EventsListPage';
+import EventDetailPage from './pages/EventDetailPage';
+import MyTransactionsPage from './pages/MyTransactionsPage';
+import MyQRCodePage from './pages/MyQRCodePage';
+import TransferPage from './pages/TransferPage';
 
 const App = () => {
-    return <BrowserRouter>
-        <Routes>
-        
-          <Route path="/" element={<Navigate to="/login" replace />} />
-    
-          <Route path="/login" element={<Login />} />
+  return (
+    <AuthProvider>
+      <BrowserRouter>
+        <Layout>
+          <Routes>
+            {/* Public routes */}
+            <Route path="/login" element={<Login />} />
             
-        </Routes>
-    </BrowserRouter>
+            {/* Protected routes */}
+            <Route element={<RequireAuth />}>
+              {/* Regular user routes */}
+              <Route path="/dashboard" element={<RegularDashboard />} />
+              <Route path="/promotions" element={<PromotionsPage />} />
+              <Route path="/events" element={<EventsListPage />} />
+              <Route path="/events/:eventId" element={<EventDetailPage />} />
+              <Route path="/transactions" element={<MyTransactionsPage />} />
+              <Route path="/my-qr" element={<MyQRCodePage />} />
+              <Route path="/transfer" element={<TransferPage />} />
+              
+              {/* Cashier routes */}
+              <Route path="/cashier" element={<CashierHome />} />
+              
+              {/* Manager/Superuser routes */}
+              <Route path="/manager" element={<ManagerHome />} />
+            </Route>
+            
+            {/* Default redirect */}
+            <Route path="/" element={<Navigate to="/login" replace />} />
+            
+            {/* 404 Not Found */}
+            <Route path="*" element={<Navigate to="/login" replace />} />
+          </Routes>
+        </Layout>
+      </BrowserRouter>
+    </AuthProvider>
+  );
 };
 
-export default App
+export default App;

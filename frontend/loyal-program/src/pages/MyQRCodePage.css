@@ -1,0 +1,195 @@
+/* My QR Code Page Styles */
+
+.qr-content {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 25px;
+  margin-top: 20px;
+}
+
+.qr-card {
+  background: white;
+  border-radius: 10px;
+  padding: 35px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.qr-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.qr-header h2 {
+  color: #2c3e50;
+  margin-bottom: 10px;
+  font-size: 1.6rem;
+}
+
+.qr-header p {
+  color: #7f8c8d;
+  font-size: 1rem;
+}
+
+.qr-code-container {
+  display: flex;
+  justify-content: center;
+  padding: 30px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 15px;
+  margin-bottom: 30px;
+}
+
+.qr-code {
+  background: white;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.qr-info {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  padding: 25px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  margin-bottom: 25px;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.info-row:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.info-label {
+  font-weight: 600;
+  color: #7f8c8d;
+  font-size: 0.95rem;
+}
+
+.info-value {
+  font-weight: 600;
+  color: #2c3e50;
+  font-size: 1rem;
+}
+
+.info-value.points {
+  color: #27ae60;
+  font-size: 1.2rem;
+}
+
+.qr-instructions {
+  padding: 20px;
+  background-color: #e8f4f8;
+  border-radius: 8px;
+  border-left: 4px solid #3498db;
+}
+
+.qr-instructions h3 {
+  color: #2c3e50;
+  margin-bottom: 15px;
+  font-size: 1.1rem;
+}
+
+.qr-instructions ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.qr-instructions li {
+  color: #34495e;
+  line-height: 1.8;
+  margin-bottom: 8px;
+}
+
+/* Tips Section */
+.qr-tips {
+  background: white;
+  border-radius: 10px;
+  padding: 25px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  height: fit-content;
+}
+
+.qr-tips h3 {
+  color: #2c3e50;
+  margin-bottom: 20px;
+  font-size: 1.3rem;
+}
+
+.tip-item {
+  display: flex;
+  gap: 15px;
+  padding: 15px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  transition: transform 0.2s;
+}
+
+.tip-item:hover {
+  transform: translateX(5px);
+}
+
+.tip-item:last-child {
+  margin-bottom: 0;
+}
+
+.tip-icon {
+  font-size: 1.8rem;
+  min-width: 30px;
+}
+
+.tip-item p {
+  color: #34495e;
+  line-height: 1.6;
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .qr-content {
+    grid-template-columns: 1fr;
+  }
+
+  .qr-tips {
+    order: 2;
+  }
+}
+
+@media (max-width: 768px) {
+  .qr-card {
+    padding: 20px;
+  }
+
+  .qr-code-container {
+    padding: 20px;
+  }
+
+  .qr-code {
+    width: 100%;
+    height: auto;
+  }
+
+  .qr-code-container svg {
+    max-width: 100%;
+    height: auto;
+  }
+
+  .qr-header h2 {
+    font-size: 1.3rem;
+  }
+
+  .qr-tips {
+    padding: 20px;
+  }
+}

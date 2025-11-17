@@ -1,0 +1,165 @@
+/* Promotions Page Styles */
+
+.promotions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.promotion-card {
+  background: white;
+  border-radius: 10px;
+  padding: 25px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s, box-shadow 0.3s;
+  border-left: 5px solid #ecf0f1;
+}
+
+.promotion-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+.promotion-card.active {
+  border-left-color: #27ae60;
+}
+
+.promotion-card.inactive {
+  border-left-color: #95a5a6;
+  opacity: 0.7;
+}
+
+.promotion-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 15px;
+  gap: 10px;
+}
+
+.promotion-title {
+  margin: 0;
+  color: #2c3e50;
+  font-size: 1.3rem;
+  font-weight: 600;
+  flex: 1;
+}
+
+.promotion-status {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.status-active {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.status-expired {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.promotion-description {
+  color: #34495e;
+  line-height: 1.6;
+  margin-bottom: 15px;
+  font-size: 0.95rem;
+}
+
+.promotion-details {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  background-color: #f8f9fa;
+  border-radius: 6px;
+  margin-bottom: 15px;
+}
+
+.promotion-type {
+  display: inline-block;
+  padding: 3px 10px;
+  background-color: #3498db;
+  color: white;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  align-self: flex-start;
+}
+
+.promotion-info {
+  color: #7f8c8d;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.promotion-dates {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+  padding-top: 15px;
+  border-top: 1px solid #ecf0f1;
+}
+
+.date-item {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.date-label {
+  font-size: 0.8rem;
+  color: #7f8c8d;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.date-value {
+  font-size: 0.9rem;
+  color: #2c3e50;
+  font-weight: 500;
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: #7f8c8d;
+}
+
+.empty-state p {
+  margin: 10px 0;
+  font-size: 1rem;
+}
+
+.empty-state p:first-child {
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: #34495e;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .promotions-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .promotion-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .promotion-status {
+    align-self: flex-start;
+  }
+
+  .promotion-dates {
+    flex-direction: column;
+    gap: 10px;
+  }
+}
