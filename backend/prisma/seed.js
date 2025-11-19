@@ -35,7 +35,7 @@ async function main() {
       name: "Super User",
       role: "superuser",
       verified: true,
-      password: "Password123!",
+      password: passwordHash,
     },
     {
       utorid: "manager1",
@@ -43,7 +43,7 @@ async function main() {
       name: "Manager One",
       role: "manager",
       verified: true,
-      password: "Password123!",
+      password: passwordHash,
     },
     {
       utorid: "cashier1",
@@ -51,7 +51,7 @@ async function main() {
       name: "Cashier One",
       role: "cashier",
       verified: true,
-      password: "Password123!",
+      password: passwordHash,
     },
   ];
 
@@ -63,7 +63,7 @@ async function main() {
       name: `Regular User ${i}`,
       role: "regular",
       verified: true,
-      password: "Password123!",
+      password: passwordHash,
     });
   }
 
