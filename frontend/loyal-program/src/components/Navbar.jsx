@@ -47,6 +47,7 @@ const Navbar = () => {
       return (
         <>
           <Link to="/cashier" className="nav-link" onClick={closeMobileMenu}>Dashboard</Link>
+          <Link to="/cashier/create-purchase" className="nav-link" onClick={closeMobileMenu}>Create Purchase</Link>
           <Link to="/cashier/scan" className="nav-link" onClick={closeMobileMenu}>Scan QR</Link>
           <Link to="/cashier/manual-award" className="nav-link" onClick={closeMobileMenu}>Manual Award</Link>
           <Link to="/cashier/transactions" className="nav-link" onClick={closeMobileMenu}>Transactions</Link>

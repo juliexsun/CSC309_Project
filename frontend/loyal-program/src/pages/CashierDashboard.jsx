@@ -116,6 +116,9 @@ const CashierDashboard = () => {
       <div className="quick-actions">
         <h2 className="section-title">Quick Actions</h2>
         <div className="action-buttons">
+          <Link to="/cashier/create-purchase" className="action-btn">
+            Create Purchase
+          </Link>
           <Link to="/cashier/scan" className="action-btn primary">
             Scan QR Code
           </Link>
