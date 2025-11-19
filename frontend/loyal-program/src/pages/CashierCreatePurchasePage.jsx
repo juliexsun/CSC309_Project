@@ -17,7 +17,6 @@ const CashierCreatePurchase = () => {
   const [success, setSuccess] = useState(false);
   const [createdTx, setCreatedTx] = useState(null);
 
-  // 跟 ScanQRPage 一样：输入/粘贴 QR 时解析
   const handleQrInput = (e) => {
     const value = e.target.value;
     setQrInput(value);
@@ -56,7 +55,6 @@ const CashierCreatePurchase = () => {
       return;
     }
 
-    // 解析 promotionIds：逗号分隔
     let promotionIds = [];
     if (promotionIdsText.trim()) {
       try {
@@ -97,15 +95,16 @@ const CashierCreatePurchase = () => {
         payload.promotionIds = promotionIds;
       }
 
-      // 调用后端 /transactions
       const res = await transactionAPI.createPurchase(payload);
+      console.log("res:", res);
 
       setSuccess(true);
       setCreatedTx(res);
       setSpent('');
       setPromotionIdsText('');
       setRemark('');
-      setQrInput('');     
+      setQrInput('');
+      setUserInfo(null);   
 
       setTimeout(() => setSuccess(false), 5000);
     } catch (err) {
@@ -143,7 +142,7 @@ const CashierCreatePurchase = () => {
               {createdTx && (
                 <span className="transaction-summary">
                   {' '}
-                  (Txn #{createdTx.id}, earned {createdTx.earned} pts)
+                  (Transaction id #{createdTx.data.id}, earned {createdTx.data.earned} points)
                 </span>
               )}
             </div>
@@ -152,7 +151,7 @@ const CashierCreatePurchase = () => {
           {error && <div className="error-banner">{error}</div>}
 
           <form onSubmit={handleSubmit} className="scan-form">
-            {/* QR 输入 */}
+            {/* QR code input */}
             <div className="form-group">
               <label htmlFor="qrInput">User QR Code Data</label>
               <textarea
@@ -170,7 +169,7 @@ const CashierCreatePurchase = () => {
               </p>
             </div>
 
-            {/* 展示解析出的 user 信息 */}
+            {/* Display parsed user information */}
             {userInfo && (
               <div className="user-info-card">
                 <h3>Customer Information</h3>
@@ -183,7 +182,7 @@ const CashierCreatePurchase = () => {
               </div>
             )}
 
-            {/* 消费金额 */}
+            {/* Amount Spent */}
             <div className="form-group">
               <label htmlFor="spent">Amount Spent ($)</label>
               <input
@@ -203,7 +202,7 @@ const CashierCreatePurchase = () => {
               </p>
             </div>
 
-            {/* promotion IDs */}
+            {/* Promotion IDs */}
             <div className="form-group">
               <label htmlFor="promotions">Promotion IDs (optional)</label>
               <input
@@ -220,7 +219,7 @@ const CashierCreatePurchase = () => {
               </p>
             </div>
 
-            {/* 备注 */}
+            {/* Remark */}
             <div className="form-group">
               <label htmlFor="remark">Remark (optional)</label>
               <input
