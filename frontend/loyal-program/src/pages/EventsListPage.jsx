@@ -46,9 +46,15 @@ const EventsListPage = () => {
     });
   };
 
-  const isEventUpcoming = (startTime) => {
-    return new Date(startTime) > new Date();
-  };
+  const getEventStatus = (startTime, endTime) => {
+  const now = new Date();
+  const start = new Date(startTime);
+  const end = new Date(endTime);
+
+  if (now < start) return "upcoming";
+  if (now > end) return "past";
+  return "ongoing";
+};
 
   if (loading) {
     return (
@@ -78,7 +84,7 @@ const EventsListPage = () => {
       ) : (
         <div className="events-grid">
           {events.map((event) => {
-            const isUpcoming = isEventUpcoming(event.startTime);
+            const status = getEventStatus(event.startTime, event.endTime);
             
             return (
               <Link 
@@ -86,11 +92,13 @@ const EventsListPage = () => {
                 to={`/events/${event.id}`}
                 className="event-card-link"
               >
-                <div className={`event-card ${isUpcoming ? 'upcoming' : 'past'}`}>
+                <div className={`event-card ${status}`}>
                   <div className="event-header">
                     <h3 className="event-title">{event.name}</h3>
-                    <span className={`event-status ${isUpcoming ? 'status-upcoming' : 'status-past'}`}>
-                      {isUpcoming ? 'Upcoming' : 'Past'}
+                    <span className={`event-status status-${status}`}>
+                      {status === "upcoming" && "Upcoming"}
+                      {status === "ongoing" && "Ongoing"}
+                      {status === "past" && "Past"}
                     </span>
                   </div>
 

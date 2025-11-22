@@ -37,10 +37,10 @@ const MyTransactionsPage = () => {
       }
 
       const response = await transactionAPI.getMyTransactions(params);
-      setTransactions(response.data.transactions || []);
+      setTransactions(response.data.results || []);
       
       // Calculate total pages
-      const total = response.data.total || 0;
+      const total = response.data.count || 0;
       setTotalPages(Math.ceil(total / itemsPerPage) || 1);
       
     } catch (err) {

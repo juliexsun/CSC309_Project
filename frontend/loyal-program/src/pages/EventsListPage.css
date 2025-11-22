@@ -67,10 +67,14 @@
   background-color: #d1ecf1;
   color: #0c5460;
 }
+.status-ongoing {
+  background-color: #fff3cd;
+  color: #c9aa45;
+}
 
 .status-past {
   background-color: #d4edda;
-  color: #155724;
+  color: #3d403e;
 }
 
 .event-description {
