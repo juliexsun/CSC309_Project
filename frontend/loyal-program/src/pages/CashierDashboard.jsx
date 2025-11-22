@@ -119,6 +119,9 @@ const CashierDashboard = () => {
           <Link to="/cashier/create-purchase" className="action-btn">
             Create Purchase
           </Link>
+          <Link to="/cashier/create-user" className="action-btn">
+            Create User
+          </Link>
           <Link to="/cashier/scan" className="action-btn primary">
             Scan QR Code
           </Link>

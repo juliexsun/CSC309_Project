@@ -1,0 +1,53 @@
+.create-user-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+
+/* ===== Popup ===== */
+
+.popup-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.popup-box {
+  width: 90%;
+  max-width: 360px;
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 20px 24px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+}
+
+.popup-box h2 {
+  margin-top: 0;
+  margin-bottom: 8px;
+  font-size: 20px;
+}
+
+.popup-success {
+  border-top: 4px solid #28a745;
+}
+
+.popup-error {
+  border-top: 4px solid #dc3545;
+}
+
+.popup-close-btn {
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: none;
+  background: #0055ff;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  float: right;
+}

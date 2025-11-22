@@ -106,6 +106,7 @@ const Login = () => {
           <p className="help-text">Regular: user1 / Password123!</p>
           <p className="help-text">Cashier: cashier1 / Password123!</p>
           <p className="help-text">Manager: manager1 / Password123!</p>
+          <p className="help-text">Superuser: superuser1 / Password123!</p>
         </div>
       </div>
     </div>

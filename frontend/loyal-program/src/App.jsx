@@ -11,6 +11,7 @@ import ScanQRPage from './pages/ScanQRPage';
 import ManualAwardPage from './pages/ManualAwardPage';
 import CashierTransactionsPage from './pages/CashierTransactionsPage';
 import CashierCreatePurchasePage from './pages/CashierCreatePurchasePage';
+import CashierCreateUserPage from './pages/CashierCreateUserPage';
 import ManagerDashboard from './pages/ManagerDashboard';
 import ManageUsersPage from './pages/ManageUsersPage';
 import ManageEventsPage from './pages/ManageEventsPage';
@@ -56,6 +57,7 @@ const App = () => {
               <Route element={<RequireRole allowedRoles={['cashier', 'manager', 'superuser']} />}>
                 <Route path="/cashier" element={<CashierDashboard />} />
                 <Route path="/cashier/create-purchase" element={<CashierCreatePurchasePage />} />
+                <Route path="/cashier/create-user" element={<CashierCreateUserPage />} />
                 <Route path="/cashier/scan" element={<ScanQRPage />} />
                 <Route path="/cashier/manual-award" element={<ManualAwardPage />} />
                 <Route path="/cashier/transactions" element={<CashierTransactionsPage />} />
