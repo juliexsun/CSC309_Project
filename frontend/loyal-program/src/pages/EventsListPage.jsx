@@ -110,31 +110,57 @@ const EventCard = ({ event }) => {
 
 const EventsListPage = () => {
   const [events, setEvents] = useState([]);
+  const [organizedEvents, setOrganizedEvents] = useState([]);
+  const [activeTab, setActiveTab] = useState('all'); // 'all' or 'organized'
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  
+  const fetchAllEvents = async () => {
+  try {
+    setLoading(true);
+    setError('');
+
+    const response = await eventAPI.getEvents({ published: true });
+    const eventsData = response.data?.results || response.data || [];
+    setEvents(eventsData);
+  } catch (err) {
+    console.error('Error fetching events:', err);
+    setError('Failed to load events.');
+  } finally {
+    setLoading(false);
+  }
+};
+
+const fetchOrganizedEvents = async () => {
+  try {
+    setLoading(true);
+    setError('');
+
+    const response = await eventAPI.getMyOrganizedEvents();
+
+    const eventsData = response.data?.results || response.data || [];
+    setOrganizedEvents(eventsData);
+  } catch (err) {
+    console.error('Error fetching organized events:', err);
+    setError('Failed to load organized events.');
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   useEffect(() => {
-    const fetchEvents = async () => {
-      try {
-        setLoading(true);
-        setError('');
+  if (activeTab === 'all') {
+    fetchAllEvents();
+  } else {
+    fetchOrganizedEvents();
+  }
+}, [activeTab]);
 
-        const response = await eventAPI.getEvents({ published: true });
-        // Backend returns { count, results }, we need the results array
-        const eventsData = response.data?.results || response.data || [];
-        setEvents(eventsData);
-      } catch (err) {
-        console.error('Error fetching events:', err);
-        setError('Failed to load events. Please try again later.');
-      } finally {
-        setLoading(false);
-      }
-    };
+  // Determine which events to display based on active tab
+  const currentEvents = activeTab === 'all' ? events : organizedEvents;
 
-    fetchEvents();
-  }, []);
 
   if (loading) {
     return (
@@ -148,7 +174,26 @@ const EventsListPage = () => {
 
   return (
     <div className="page-container">
-      <h1 className="page-title">Events</h1>
+
+      <div className="events-tabs">
+        <button
+          className={activeTab === 'all' ? 'tab active' : 'tab'}
+          onClick={() => setActiveTab('all')}
+        >
+          All Events
+        </button>
+
+        <button
+          className={activeTab === 'organized' ? 'tab active' : 'tab'}
+          onClick={() => setActiveTab('organized')}
+        >
+          My Organized Events
+        </button>
+      </div>
+
+      <h1 className="page-title">
+        {activeTab === 'all' ? 'All Events' : 'My Organized Events'}
+      </h1>
 
       {error && (
         <div className="error-banner">
@@ -156,21 +201,28 @@ const EventsListPage = () => {
         </div>
       )}
 
-      {events.length === 0 ? (
+      {currentEvents.length === 0 ? (
         <div className="empty-state">
-          <p>No events available at the moment.</p>
-          <p>Check back soon for exciting events!</p>
+          {activeTab === 'all' ? (
+            <>
+              <p>No events available at the moment.</p>
+              <p>Check back soon for exciting events!</p>
+            </>
+          ) : (
+            <>
+              <p>You are not organizing any events yet.</p>
+              <p>Create or be assigned as an organizer to see them here.</p>
+            </>
+          )}
         </div>
       ) : (
         <div className="events-grid">
-          {events.map((event) => (
+          {currentEvents.map((event) => (
             <EventCard key={event.id} event={event} />
           ))}
         </div>
       )}
 
-      {/* TODO: hook this up to真正的“我负责的 event 列表” */}
-      <h2 className="page-title">My Organized Events</h2>
     </div>
   );
 };

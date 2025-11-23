@@ -140,6 +140,28 @@
   color: #2980b9;
 }
 
+
+.events-tabs {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-bottom: 20px;
+}
+
+.tab {
+  padding: 8px 14px;
+  background: #f2f2f2;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+}
+
+.tab.active {
+  background: #007bff;
+  color: white;
+}
+
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .events-grid {
