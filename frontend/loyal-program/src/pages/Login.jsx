@@ -99,6 +99,23 @@ const Login = () => {
           </button>
         </form>
 
+        <div className="auth-links">
+          <button 
+            type="button" 
+            className="link-button" 
+            onClick={() => navigate('/register')}
+          >
+            Register
+          </button>
+          <button 
+            type="button" 
+            className="link-button" 
+            onClick={() => navigate('/reset-password')}
+          >
+            Reset Password
+          </button>
+        </div>
+
         <div className="login-help">
           <p className="help-text">
             <strong>Test Accounts:</strong>
