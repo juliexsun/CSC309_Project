@@ -5,6 +5,8 @@ import Layout from './components/Layout';
 import RequireAuth from './components/RequireAuth';
 import RequireRole from './components/RequireRole';
 import Login from './pages/Login';
+import RegisterPage from './pages/RegisterPage';
+import ResetPasswordPage from './pages/ResetPasswordPage';
 import RegularDashboard from './pages/RegularDashboard';
 import CashierDashboard from './pages/CashierDashboard';
 import ScanQRPage from './pages/ScanQRPage';
@@ -32,6 +34,8 @@ const App = () => {
           <Routes>
             {/* Public routes */}
             <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<RegisterPage />} />
+            <Route path="/reset-password" element={<ResetPasswordPage />} />
             
             {/* Protected routes */}
             <Route element={<RequireAuth />}>
