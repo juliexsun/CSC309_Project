@@ -55,12 +55,12 @@
   color: #0c5460;
 }
 
-.event-status-badge.ongoing {
+.event-status-badge.past {
   background-color: #fff3cd;
   color: #856404;
 }
 
-.event-status-badge.past {
+.event-status-badge.ongoing {
   background-color: #d4edda;
   color: #155724;
 }

@@ -21,6 +21,7 @@ async function main() {
   await prisma.transaction.deleteMany();
   await prisma.promotion.deleteMany();
   await prisma.user.deleteMany();
+  await prisma.event.deleteMany();
 
 
   // ==========================================================
@@ -70,6 +71,7 @@ async function main() {
   await prisma.user.createMany({ data: usersData });
 
   const users = await prisma.user.findMany();
+  const user1 = users.find(u => u.utorid === "user1");
   const cashier = users.find(u => u.utorid === "cashier1");
   const manager = users.find(u => u.utorid === "manager1");
   const regularUsers = users.filter(u => u.role === "regular");
@@ -134,31 +136,87 @@ async function main() {
   // 3. Create 5 Events
   // ==========================================================
   const events = [];
+
+  // =====================================================
+  // 3a. Create 5 Ongoing Events
+  // =====================================================
+  const ongoingEvents = [];
+
   for (let i = 1; i <= 5; i++) {
-    const event = await prisma.event.create({
+    const ongoingEvent = await prisma.event.create({
       data: {
         name: `Event ${i}`,
-        description: `Description for event ${i}`,
+        description: `This is an ongoing event #${i}`,
         location: "BA 1130",
-        startTime: now,
-        endTime: nextWeek,
+        startTime: new Date("2025-11-01T00:00:00"), // ⬅️ fixed start date
+        endTime: new Date("2025-12-31T23:59:59"),   // ⬅️ fixed end date
         capacity: 50,
         pointsAllocated: 500,
         published: true,
         organizers: {
-          create: [{ userId: manager.id }],
+          create: [{ userId: manager.id }, { userId: user1.id }], // Add user1 as organizer too
         },
       },
     });
-    events.push(event);
+    ongoingEvents.push(ongoingEvent);
+    events.push(ongoingEvent);
   }
 
+  // =====================================================
+  // 3b. Create 3 Past Events (already ended)
+  // =====================================================
+  const pastEvents = [];
+
+  for (let i = 1; i <= 3; i++) {
+    const pastEvent = await prisma.event.create({
+      data: {
+        name: `Past Event ${i}`,
+        description: `This is a past event #${i}`,
+        location: "BA 3000",
+        startTime: new Date("2025-10-01T00:00:00"), // ⬅️ fixed start date
+        endTime: new Date("2025-10-07T23:59:59"),   // ⬅️ fixed end date
+        capacity: 50,
+        pointsAllocated: 300,
+        published: true,
+        organizers: {
+          create: [{ userId: manager.id},{ userId: user1.id }], // Add user1 as organizer too
+        },
+      },
+    });
+    pastEvents.push(pastEvent);
+  }
+
+  // =====================================================
+  // 3c. Create 3 Upcoming Events (not started yet)
+  // =====================================================
+  const upcomingEvents = [];
+
+  for (let i = 1; i <= 3; i++) {
+    const upcomingEvent = await prisma.event.create({
+      data: {
+        name: `Upcoming Event ${i}`,
+        description: `This is an upcoming event #${i}`,
+        location: "BA 3000",
+        startTime: new Date("2026-01-01T00:00:00"), // ⬅️ fixed start date
+        endTime: new Date("2026-01-07T23:59:59"),   // ⬅️ fixed end date
+        capacity: 50,
+        pointsAllocated: 300,
+        published: true,
+        organizers: {
+          create: [{ userId: manager.id},{ userId: user1.id }], // Add user1 as organizer too
+        },
+      },
+    });
+    upcomingEvents.push(upcomingEvent);
+  }
+
+  
 
   // ==========================================================
-  // 4. Add guests to all events
+  // 4. Add guests(all regularUsers, except user1, as user1 is an organizer) to all events
   // ==========================================================
   for (const event of events) {
-    for (let i = 0; i < 5; i++) {
+    for (let i = 1; i < 5; i++) {
       await prisma.eventGuest.create({
         data: {
           eventId: event.id,

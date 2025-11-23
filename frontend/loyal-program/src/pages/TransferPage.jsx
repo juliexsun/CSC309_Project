@@ -10,6 +10,7 @@ const TransferPage = () => {
   
   const [recipientId, setRecipientId] = useState('');
   const [amount, setAmount] = useState('');
+  const [remark, setRemark] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
@@ -56,6 +57,7 @@ const TransferPage = () => {
       setSuccess(true);
       setRecipientId('');
       setAmount('');
+      setRemark('');
       
       // Show success message for 2 seconds then redirect
       setTimeout(() => {
@@ -128,6 +130,21 @@ const TransferPage = () => {
                 />
                 <span className="input-hint">
                   Maximum: {user?.points || 0} points
+                </span>
+              </div>
+
+              <div className='form-group'>  
+                <label htmlFor="remark">Remark</label>
+                <input
+                  id="remark"
+                  type="text"
+                  value={remark}
+                  onChange={(e) => setRemark(e.target.value)}
+                  placeholder="Enter a remark (optional)"
+                  disabled={loading}
+                />
+                <span className="input-hint">
+                  Add a note for this transfer (optional)
                 </span>
               </div>
 

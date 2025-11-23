@@ -176,6 +176,9 @@ const getEvents = async (req, res, next) => {
       skip,
       take: limit,
       include: {
+        organizers: {
+          select: { userId: true }
+        },
         _count: {
           select: { guests: true },
         },
@@ -203,6 +206,7 @@ const getEvents = async (req, res, next) => {
         endTime: event.endTime,
         capacity: event.capacity,
         numGuests: event._count.guests,
+        organizers: event.organizers,
       };
       if (role === 'regular') {
         return common;

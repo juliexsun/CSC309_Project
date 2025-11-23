@@ -10,6 +10,7 @@ import ResetPasswordPage from './pages/ResetPasswordPage';
 import RegularDashboard from './pages/RegularDashboard';
 import CashierDashboard from './pages/CashierDashboard';
 import ScanQRPage from './pages/ScanQRPage';
+import ProcessRedemptionPage from './pages/ProcessRedemptionPage';
 import ManualAwardPage from './pages/ManualAwardPage';
 import CashierTransactionsPage from './pages/CashierTransactionsPage';
 import CashierCreatePurchasePage from './pages/CashierCreatePurchasePage';
@@ -63,6 +64,7 @@ const App = () => {
                 <Route path="/cashier/create-purchase" element={<CashierCreatePurchasePage />} />
                 <Route path="/cashier/create-user" element={<CashierCreateUserPage />} />
                 <Route path="/cashier/scan" element={<ScanQRPage />} />
+                <Route path="/cashier/process-redemption" element={<ProcessRedemptionPage />} />
                 <Route path="/cashier/manual-award" element={<ManualAwardPage />} />
                 <Route path="/cashier/transactions" element={<CashierTransactionsPage />} />
               </Route>

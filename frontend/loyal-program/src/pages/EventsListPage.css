@@ -5,6 +5,7 @@
   grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
   gap: 25px;
   margin-top: 20px;
+  margin-bottom: 80px;
 }
 
 .event-card-link {
@@ -31,6 +32,10 @@
 
 .event-card.upcoming {
   border-left-color: #3498db;
+}
+
+.event-card.ongoing {
+  border-left-color: #27ae60;
 }
 
 .event-card.past {
@@ -67,12 +72,12 @@
   background-color: #d1ecf1;
   color: #0c5460;
 }
-.status-ongoing {
+.status-past {
   background-color: #fff3cd;
   color: #c9aa45;
 }
 
-.status-past {
+.status-ongoing {
   background-color: #d4edda;
   color: #3d403e;
 }
@@ -138,6 +143,28 @@
 .event-card:hover .view-details-link {
   color: #2980b9;
 }
+
+
+.events-tabs {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-bottom: 20px;
+}
+
+.tab {
+  padding: 8px 14px;
+  background: #f2f2f2;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+}
+
+.tab.active {
+  background: #007bff;
+  color: white;
+}
+
 
 /* Responsive Design */
 @media (max-width: 768px) {

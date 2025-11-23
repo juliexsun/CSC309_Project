@@ -30,8 +30,10 @@ const MyRedemptionsPage = () => {
         sort: 'createdAt_desc'
       });
 
-      setRedemptions(response.data.transactions || []);
-      const total = response.data.total || 0;
+       
+      setRedemptions(response.data.results || []);
+
+      const total = response.data.count || 0;
       setTotalPages(Math.ceil(total / itemsPerPage) || 1);
 
     } catch (err) {
@@ -106,7 +108,7 @@ const MyRedemptionsPage = () => {
             {redemptions.map((redemption) => (
               <div key={redemption.id} className="redemption-card">
                 <div className="redemption-header">
-                  <span className="redemption-id">Request #{redemption.id}</span>
+                  <span className="redemption-id">Redemption Request #{redemption.id}</span>
                   <span className={`status-badge ${redemption.processed ? 'processed' : 'pending'}`}>
                     {redemption.processed ? 'Processed' : 'Pending'}
                   </span>
@@ -120,7 +122,7 @@ const MyRedemptionsPage = () => {
                     </div>
                     <div className="info-row">
                       <span className="label">Created:</span>
-                      <span className="value">{formatDate(redemption.createdAt)}</span>
+                      <span className="value">{new Date(redemption.createdAt).toLocaleString()}</span>
                     </div>
                     {redemption.remark && (
                       <div className="info-row">

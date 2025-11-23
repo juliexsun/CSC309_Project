@@ -70,19 +70,23 @@ export const transactionAPI = {
   
   // Create redemption transaction
   createRedemption: (amount, remark) => 
-    apiClient.post('/users/me/transactions', { amount, remark }),
+    apiClient.post('/users/me/transactions', { type: "redemption", amount, remark }),
   
   // Process redemption transaction (cashier/manager/superuser)
-  processRedemption: (transactionId) => 
-    apiClient.patch(`/transactions/${transactionId}/processed`),
+  processRedemption: (transactionId, payload) => 
+    apiClient.patch(`/transactions/${transactionId}/processed`, payload),
   
   // Get redemption by ID
   getRedemptionById: (transactionId) => 
     apiClient.get(`/transactions/${transactionId}`),
   
   // Create transfer transaction
-  createTransfer: (toUserId, amount) => 
-    apiClient.post(`/users/${toUserId}/transactions`, { amount }),
+  createTransfer: (toUserId, amount, remark) => 
+    apiClient.post(`/users/${toUserId}/transactions`, {
+      type: "transfer",
+      amount: Number(amount),
+      remark: remark
+    }),
   
   // Award points (cashier/manager/superuser only)
   awardPoints: (data) => 
@@ -103,19 +107,25 @@ export const eventAPI = {
     apiClient.get('/events', { params }),
   
   // Get events where I am an organizer
-  getMyOrganizedEvents: () => 
+  getMyOrganizedEvents: (myId) =>
     apiClient.get('/events')
-      .then(res => {
-        // Filter events where current user is an organizer
+      .then((res) => {
+        // All events
         const events = res.data?.results || res.data || [];
-        return { 
-          ...res, 
+
+        // Filter events where organizers include the current user
+        const myEvents = events.filter(event =>
+          event.organizers?.some(org => org.userId === myId)
+        );
+
+        // Keep the response structure the same, just replace results with the filtered ones
+        return {
+          ...res,
           data: {
             ...res.data,
-            results: events.filter(event => 
-              event.organizers && event.organizers.length > 0
-            )
-          }
+            count: myEvents.length,   // Optional: update count
+            results: myEvents,
+          },
         };
       }),
   
