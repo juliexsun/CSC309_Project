@@ -209,6 +209,15 @@
   cursor: not-allowed;
 }
 
+/* Organizer Edit Event Section */
+.edit-form-section {
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .event-detail-card {

@@ -21,6 +21,22 @@ function formatDateTime(dateString) {
   });
 }
 
+function formatDateTimeLocal(dateString) {
+  if (!dateString) return '';
+
+  const date = new Date(dateString);
+  const pad = (n) => String(n).padStart(2, '0');
+
+  const year = date.getFullYear();
+  const month = pad(date.getMonth() + 1);
+  const day = pad(date.getDate());
+  const hours = pad(date.getHours());
+  const minutes = pad(date.getMinutes());
+
+  return `${year}-${month}-${day}T${hours}:${minutes}`;
+}
+
+
 /**
  * Decide whether an event is upcoming, ongoing, or past,
  * based on its start and end times.
@@ -74,8 +90,140 @@ function renderRSVPSection(canRSVP, isRsvped, actionLoading, handleRSVP, handleC
   );
 }
 
+/** Organizer Edit Event Section
+ *
+ * Renders the edit button and form for organizers to edit event details.
+ */
+function OrganizerEditEventSection({
+  userIsOrganizer,
+  showEditForm,
+  toggleEditForm,
+  editFormData,
+  setEditFormData,
+  actionLoading,
+  handleUpdateEvent,
+}) {
+  if (!userIsOrganizer) return null;
+
+  return (
+    <div className="event-edit-section">
+      <button
+        className="edit-btn"
+        onClick={toggleEditForm}
+        disabled={actionLoading}
+      >
+        {showEditForm ? 'Cancel Edit' : 'Edit Event Details'}
+      </button>
+
+      {showEditForm && (
+        <div className="edit-form-section">
+          <h3>Edit Event Details</h3>
+
+          <form onSubmit={handleUpdateEvent} className="event-form">
+            {/* === Name + Location === */}
+            <div className="form-row">
+              <div className="form-group">
+                <label htmlFor="edit-name">Event Name</label>
+                <input
+                  id="edit-name"
+                  type="text"
+                  value={editFormData.name}
+                  onChange={(e) =>
+                    setEditFormData(prev => ({ ...prev, name: e.target.value }))
+                  }
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="edit-location">Location</label>
+                <input
+                  id="edit-location"
+                  type="text"
+                  value={editFormData.location}
+                  onChange={(e) =>
+                    setEditFormData(prev => ({ ...prev, location: e.target.value }))
+                  }
+                  required
+                />
+              </div>
+            </div>
+
+            {/* === Description === */}
+            <div className="form-group">
+              <label htmlFor="edit-description">Description</label>
+              <textarea
+                id="edit-description"
+                rows={3}
+                value={editFormData.description}
+                onChange={(e) =>
+                  setEditFormData(prev => ({ ...prev, description: e.target.value }))
+                }
+                required
+              />
+            </div>
+
+            {/* === Start & End Time === */}
+            <div className="form-row">
+              <div className="form-group">
+                <label htmlFor="edit-startTime">Start Time</label>
+                <input
+                  id="edit-startTime"
+                  type="datetime-local"
+                  value={editFormData.startTime}
+                  onChange={(e) =>
+                    setEditFormData(prev => ({ ...prev, startTime: e.target.value }))
+                  }
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="edit-endTime">End Time</label>
+                <input
+                  id="edit-endTime"
+                  type="datetime-local"
+                  value={editFormData.endTime}
+                  onChange={(e) =>
+                    setEditFormData(prev => ({ ...prev, endTime: e.target.value }))
+                  }
+                  required
+                />
+              </div>
+            </div>
+
+            {/* === Capacity === */}
+            <div className="form-row">
+              <div className="form-group">
+                <label htmlFor="edit-capacity">Capacity (optional)</label>
+                <input
+                  id="edit-capacity"
+                  type="number"
+                  min="1"
+                  value={editFormData.capacity}
+                  onChange={(e) =>
+                    setEditFormData(prev => ({ ...prev, capacity: e.target.value }))
+                  }
+                  placeholder="Leave empty for unlimited"
+                />
+              </div>
+            </div>
+
+            <button type="submit" className="submit-btn" disabled={actionLoading}>
+              {actionLoading ? 'Saving...' : 'Save Changes'}
+            </button>
+          </form>
+        </div>
+      )}
+    </div>
+  );
+}
 
 
+
+/** 
+ * Event Detail Page
+ */
 const EventDetailPage = () => {
   const { eventId } = useParams();
   const navigate = useNavigate();
@@ -93,6 +241,17 @@ const EventDetailPage = () => {
   const [actionLoading, setActionLoading] = useState(false);
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+
+  // Organizer edit form state
+  const [showEditForm, setShowEditForm] = useState(false);
+  const [editFormData, setEditFormData] = useState({
+    name: '',
+    description: '',
+    location: '',
+    startTime: '',
+    endTime: '',
+    capacity: ''
+  });
 
   const fetchEventDetails = async ({ showPageLoader = true } = {}) => {
   try {
@@ -119,6 +278,7 @@ const EventDetailPage = () => {
 
     
     // ===== Determine RSVP status from eventData.guests =====
+    // Problem: if user is not an organizer, eventData does not include guests
     const guestsList = eventData.guests || [];
     setGuests(guestsList);
 
@@ -126,6 +286,18 @@ const EventDetailPage = () => {
       (guest) => guest.utorid === user?.utorid
     );
     setIsRsvped(userIsGuest);
+
+    // If edit form is open, keep the form in sync with latest event data
+    if (showEditForm) {
+      setEditFormData({
+        name: eventData.name || '',
+        description: eventData.description || '',
+        location: eventData.location || '',
+        startTime: formatDateTimeLocal(eventData.startTime),
+        endTime: formatDateTimeLocal(eventData.endTime),
+        capacity: eventData.capacity ?? ''
+      });
+    }
 
   } catch (err) {
     console.error('Error fetching event details:', err);
@@ -214,6 +386,82 @@ const EventDetailPage = () => {
       setActionLoading(false);
     }
   };
+
+   /**
+   * Toggle organizer edit form visibility.
+   * When opening, prefill form with current event data.
+   */
+  const handleToggleEditForm = () => {
+    if (!event) return;
+
+    const nextShow = !showEditForm;
+    setShowEditForm(nextShow);
+
+    if (nextShow) {
+      // Prefill form when edit is opened
+      setEditFormData({
+        name: event.name || '',
+        description: event.description || '',
+        location: event.location || '',
+        startTime: formatDateTimeLocal(event.startTime),
+        endTime: formatDateTimeLocal(event.endTime),
+        capacity: event.capacity ?? ''
+      });
+    }
+  };
+
+
+  /**
+   * Handle organizer updating event details.
+   * This uses PATCH /events/:eventId.
+   */
+  const handleUpdateEvent = async (e) => {
+    e.preventDefault();
+
+    try {
+      setActionLoading(true);
+      setError('');
+      setSuccessMessage('');
+
+      // Build payload for PATCH /events/:eventId
+      const payload = {
+        name: editFormData.name,
+        description: editFormData.description,
+        location: editFormData.location,
+        // Convert datetime-local back to ISO string if provided
+        startTime: editFormData.startTime
+          ? new Date(editFormData.startTime).toISOString()
+          : undefined,
+        endTime: editFormData.endTime
+          ? new Date(editFormData.endTime).toISOString()
+          : undefined,
+        capacity:
+          editFormData.capacity === '' || editFormData.capacity === null
+            ? null
+            : parseInt(editFormData.capacity, 10)
+      };
+
+      // Send update request
+      await eventAPI.updateEvent(eventId, payload);
+
+      setSuccessMessage('Event updated successfully.');
+
+      // Refresh event details so the top section updates
+      await fetchEventDetails({ showPageLoader: false });
+
+      // Optional: close the edit form after successful update
+      setShowEditForm(false);
+    } catch (err) {
+      console.error('Error updating event:', err);
+      const errorMsg =
+        err.response?.data?.error || 'Failed to update event. Please try again.';
+      setError(errorMsg);
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+
 
   // Show full-page loading state
   if (loading) {
@@ -342,9 +590,40 @@ const EventDetailPage = () => {
 
             </div>
           </div>
+          
+          { userIsOrganizer && (
+          <div className="detail-section">
+            <h3>Guests Information</h3>
+            <div className="guests-list">
+              {guests.length === 0 ? (
+                <p>No guests have RSVP'd yet.</p>
+              ) : (
+                guests.map((guest) => (
+                  <div key={guest.utorid} className="guest-item">
+                    <span className="guest-name">{guest.name} ({guest.utorid})</span>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+          )}
+            
 
           {/* RSVP Section */}
           {renderRSVPSection(canRSVP, isRsvped, actionLoading, handleRSVP, handleCancelRSVP)}
+
+          {/* Organizers Edit Event Section */}
+          <OrganizerEditEventSection
+            userIsOrganizer={userIsOrganizer}
+            showEditForm={showEditForm}
+            toggleEditForm={handleToggleEditForm}
+            editFormData={editFormData}
+            setEditFormData={setEditFormData}
+            actionLoading={actionLoading}
+            handleUpdateEvent={handleUpdateEvent}
+          />
+
+
 
         </div>
       </div>
