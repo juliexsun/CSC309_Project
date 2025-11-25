@@ -252,22 +252,20 @@ const getEventById = async (req, res, next) => {
     }
 
     const userIsOrganizer = await isOrganizer(eventId, userId);
-    
-    // Check permissions
-    if (role === 'regular' || role === 'cashier') {
-      if (!event.published) {
-        return next(NotFound('Event not found or is not published.'));
-      }
-      return res.status(200).json(formatEventForRegular(event, event._count.guests));
-    } else {
-      if (userIsOrganizer && !event.published) {
-         // Organizer can see their unpublished event
-      } else if (role !== 'manager' && role !== 'superuser' && !userIsOrganizer) {
-         // This case shouldn't be hit due to 'regular' check, but good for safety
-         return next(Forbidden('You do not have permission to view this event.'));
-      }
+
+    // Organizer OR manager OR superuser → full access
+    if (userIsOrganizer || role === 'manager' || role === 'superuser') {
+      // Organizer can see unpublished events
       return res.status(200).json(formatEventForManager(event, event._count.guests));
     }
+
+    // Regular or cashier → limited access, but only if published
+    if (!event.published) {
+      return next(NotFound('Event not found or is not published.'));
+    }
+
+    return res.status(200).json(formatEventForRegular(event, event._count.guests));
+    
   } catch (err) {
     next(err);
   }
