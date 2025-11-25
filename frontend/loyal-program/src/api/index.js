@@ -155,11 +155,14 @@ export const eventAPI = {
   
   // Get event guests (organizer/manager/superuser)
   getEventGuests: (eventId, params) => 
-    apiClient.get(`/events/${eventId}/guests`, { params }),
+    apiClient.get(`/events/${eventId}`, { params }).then(res => {
+      // The guests list is assumed to be in res.data.guests
+      return { data: res.data.guests || [] };
+    }),
   
   // Add guest to event (organizer/manager/superuser)
-  addEventGuest: (eventId, userId) => 
-    apiClient.post(`/events/${eventId}/guests`, { userId }),
+  addEventGuest: (eventId, utorid) => 
+    apiClient.post(`/events/${eventId}/guests`, { utorid }),
   
   // Remove guest from event (organizer/manager/superuser)
   removeEventGuest: (eventId, userId) => 
