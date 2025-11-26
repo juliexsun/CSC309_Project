@@ -1,12 +1,35 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../hooks/useAuth';
+import { useSocket } from "../context/SocketContext";
 import './Navbar.css';
 
 const Navbar = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const { socket } = useSocket();
+  const [toast, setToast] = useState(null);
+
+  useEffect(() => {
+    if (!socket) return;
+
+    const handler = (data) => {
+      console.log("📩 Notification received:", data);
+
+      // show toast
+      setToast({
+        message: data.message,
+        type: data.type ?? "info",
+      });
+
+      setTimeout(() => setToast(null), 4000);
+    };
+
+    socket.on("notification", handler);
+    return () => socket.off("notification", handler);
+  }, [socket]);
 
   const handleLogout = () => {
     logout();
@@ -73,6 +96,7 @@ const Navbar = () => {
   };
 
   return (
+    <>
     <nav className="navbar">
       <div className="navbar-container">
         <div className="navbar-brand">
@@ -108,6 +132,15 @@ const Navbar = () => {
         </div>
       </div>
     </nav>
+
+    {/* ⭐ */}
+      {toast && (
+        <div className="notification-toast">
+          <strong>{toast.type}</strong>
+          <div>{toast.message}</div>
+        </div>
+      )}
+    </>
   );
 };
 
