@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { eventAPI } from '../api';
 import './ManageEventsPage.css';
 
@@ -239,7 +240,8 @@ const ManageEventsPage = () => {
             <p className="empty-message">No events found</p>
           ) : (
             events.map((event) => (
-              <div key={event.id} className="event-item">
+              <Link to={`/manager/events/${event.id}`} key={event.id} className="event-item-link">
+                <div className="event-item">
                 <div className="event-main">
                   <h3>{event.name}</h3>
                   <p className="event-location">{event.location}</p>
@@ -270,7 +272,8 @@ const ManageEventsPage = () => {
                     Delete
                   </button>
                 </div>
-              </div>
+                </div>
+              </Link>
             ))
           )}
         </div>

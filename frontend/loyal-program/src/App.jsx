@@ -18,6 +18,7 @@ import CashierCreateUserPage from './pages/CashierCreateUserPage';
 import ManagerDashboard from './pages/ManagerDashboard';
 import ManageUsersPage from './pages/ManageUsersPage';
 import ManageEventsPage from './pages/ManageEventsPage';
+import ManageEventDetailPage from './pages/ManageEventDetailPage';
 import ManagePromotionsPage from './pages/ManagePromotionsPage';
 import ManagerTransactionsPage from './pages/ManagerTransactionsPage';
 import ManagerTransactionDetailsPage from './pages/ManagerTransactionDetailsPage';
@@ -76,6 +77,7 @@ const App = () => {
                 <Route path="/manager" element={<ManagerDashboard />} />
                 <Route path="/manager/users" element={<ManageUsersPage />} />
                 <Route path="/manager/events" element={<ManageEventsPage />} />
+                <Route path="/manager/events/:eventId" element={<ManageEventDetailPage />} />
                 <Route path="/manager/promotions" element={<ManagePromotionsPage />} />
                 <Route path="/manager/transactions" element={<ManagerTransactionsPage />} />
                 <Route path="/manager/transactions/:transactionId" element={<ManagerTransactionDetailsPage />} />
