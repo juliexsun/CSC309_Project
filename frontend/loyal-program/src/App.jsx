@@ -19,6 +19,8 @@ import ManagerDashboard from './pages/ManagerDashboard';
 import ManageUsersPage from './pages/ManageUsersPage';
 import ManageEventsPage from './pages/ManageEventsPage';
 import ManagePromotionsPage from './pages/ManagePromotionsPage';
+import ManagerTransactionsPage from './pages/ManagerTransactionsPage';
+import ManagerTransactionDetailsPage from './pages/ManagerTransactionDetailsPage';
 import PromotionsPage from './pages/PromotionsPage';
 import EventsListPage from './pages/EventsListPage';
 import EventDetailPage from './pages/EventDetailPage';
@@ -75,7 +77,8 @@ const App = () => {
                 <Route path="/manager/users" element={<ManageUsersPage />} />
                 <Route path="/manager/events" element={<ManageEventsPage />} />
                 <Route path="/manager/promotions" element={<ManagePromotionsPage />} />
-                <Route path="/manager/transactions" element={<CashierTransactionsPage />} />
+                <Route path="/manager/transactions" element={<ManagerTransactionsPage />} />
+                <Route path="/manager/transactions/:transactionId" element={<ManagerTransactionDetailsPage />} />
               </Route>
             </Route>
             

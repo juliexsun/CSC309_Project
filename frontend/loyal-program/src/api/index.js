@@ -67,6 +67,14 @@ export const transactionAPI = {
   // Create purchase transaction (cashier/manager/superuser)
   createPurchase: (data) => 
     apiClient.post('/transactions', data),
+
+  // Create an adjustment transaction
+  createAdjustment: (data) =>
+    apiClient.post('/transactions', data),
+  
+  // Get transaction by ID
+  getTransactionById: (transactionId) => 
+    apiClient.get(`/transactions/${transactionId}`),
   
   // Create redemption transaction
   createRedemption: (amount, remark) => 
@@ -98,6 +106,11 @@ export const transactionAPI = {
   // Update transaction (manager/superuser only)
   updateTransaction: (transactionId, data) => 
     apiClient.patch(`/transactions/${transactionId}`, data),
+
+  // Update transaction suspicious state 
+  updateSuspicious: (id, data) =>
+    apiClient.patch(`/transactions/${id}/suspicious`, data),
+
 };
 
 // ===== Event APIs =====
