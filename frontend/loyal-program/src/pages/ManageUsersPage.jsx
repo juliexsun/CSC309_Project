@@ -11,9 +11,11 @@ const ManageUsersPage = () => {
     utorid: '',
     role: '',
     verified: '',
+    suspicious: '',
     page: 1,
     limit: 20
   });
+
   const [totalCount, setTotalCount] = useState(0);
   const [editingUser, setEditingUser] = useState(null);
   const [formData, setFormData] = useState({});
@@ -64,7 +66,9 @@ const ManageUsersPage = () => {
       name: user.name,
       points: user.points,
       verified: user.verified,
-      role: user.role
+      role: user.role,
+      suspicious: Boolean(user.suspicious),
+      email: user.email
     });
     setError('');
     setSuccess('');
@@ -79,7 +83,19 @@ const ManageUsersPage = () => {
   const handleSaveEdit = async (userId) => {
     try {
       setError('');
-      await userAPI.updateUser(userId, formData);
+      const allowedFields = ["verified", "suspicious", "role", "email"];
+      const payload = {};
+
+      console.log(payload);
+
+      for (const key of allowedFields) {
+        if (formData[key] !== undefined) {
+          payload[key] = formData[key];
+        }
+      }
+
+      await userAPI.updateUser(userId, payload);
+
       setSuccess('User updated successfully');
       setEditingUser(null);
       setFormData({});
@@ -116,8 +132,8 @@ const ManageUsersPage = () => {
           <input
             id="utorid-filter"
             type="text"
-            value={filters.utorid}
-            onChange={(e) => handleFilterChange('utorid', e.target.value)}
+            value={filters.name}
+            onChange={(e) => handleFilterChange('name', e.target.value)}
             placeholder="Enter UTORid"
           />
         </div>
@@ -149,7 +165,26 @@ const ManageUsersPage = () => {
             <option value="false">Unverified</option>
           </select>
         </div>
+
+        <div className="filter-group">
+          <label>Suspicious:</label>
+          <select
+            value={filters.suspicious}
+            onChange={(e) =>
+              handleFilterChange(
+                "suspicious",
+                e.target.value === "" ? "" : e.target.value === "true"
+              )
+            }
+          >
+            <option value="">All</option>
+            <option value="true">Suspicious</option>
+            <option value="false">Not Suspicious</option>
+          </select>
+        </div>
       </div>
+
+      
 
       {loading ? (
         <div className="loading-container">
@@ -169,9 +204,11 @@ const ManageUsersPage = () => {
                   <th>ID</th>
                   <th>UTORid</th>
                   <th>Name</th>
+                  <th>Email</th>
                   <th>Role</th>
                   <th>Points</th>
                   <th>Verified</th>
+                  <th>Suspicious</th>
                   <th>Actions</th>
                 </tr>
               </thead>
@@ -181,15 +218,25 @@ const ManageUsersPage = () => {
                     <td>{user.id}</td>
                     <td>{user.utorid}</td>
                     <td>
+                      <input 
+                        type="text"
+                        value={user.name}
+                        disabled
+                        className="edit-input disabled"
+                      />
+                    </td>
+                    <td>
                       {editingUser === user.id ? (
                         <input
                           type="text"
-                          value={formData.name}
-                          onChange={(e) => setFormData({...formData, name: e.target.value})}
+                          value={formData.email}
+                          onChange={(e) =>
+                            setFormData({ ...formData, email: e.target.value })
+                          }
                           className="edit-input"
                         />
                       ) : (
-                        user.name
+                        user.email
                       )}
                     </td>
                     <td>
@@ -209,14 +256,7 @@ const ManageUsersPage = () => {
                       )}
                     </td>
                     <td>
-                      {editingUser === user.id ? (
-                        <input
-                          type="number"
-                          value={formData.points}
-                          onChange={(e) => setFormData({...formData, points: parseInt(e.target.value)})}
-                          className="edit-input small"
-                        />
-                      ) : (
+                      {(
                         user.points
                       )}
                     </td>
@@ -230,6 +270,21 @@ const ManageUsersPage = () => {
                       ) : (
                         <span className={user.verified ? 'verified' : 'unverified'}>
                           {user.verified ? 'Yes' : 'No'}
+                        </span>
+                      )}
+                    </td>
+                    <td>
+                      {editingUser === user.id ? (
+                        <input
+                          type="checkbox"
+                          checked={formData.suspicious}
+                          onChange={(e) =>
+                            setFormData({ ...formData, suspicious: e.target.checked })
+                          }
+                        />
+                      ) : (
+                        <span className={user.suspicious ? 'suspicious' : 'not-suspicious'}>
+                          {user.suspicious ? 'Yes' : 'No'}
                         </span>
                       )}
                     </td>
