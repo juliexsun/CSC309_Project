@@ -324,6 +324,7 @@ const getAllTransactions = async (req, res, next) => {
       remark: t.remark,
       createdBy: t.createdBy.utorid,
       relatedId: t.relatedId,
+      createdAt: t.createdAt
     }));
 
     res.status(200).json({
