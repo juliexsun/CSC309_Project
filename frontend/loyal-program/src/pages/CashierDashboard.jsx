@@ -125,15 +125,15 @@ const CashierDashboard = () => {
           <Link to="/cashier/create-user" className="action-btn">
             Create User
           </Link>
-          <Link to="/cashier/scan" className="action-btn primary">
+          {/* <Link to="/cashier/scan" className="action-btn primary">
             Scan QR Code
-          </Link>
+          </Link> */}
           <Link to="/cashier/process-redemption" className="action-btn">
             Process Redemption
           </Link>
-          <Link to="/cashier/manual-award" className="action-btn">
+          {/* <Link to="/cashier/manual-award" className="action-btn">
             Manual Award
-          </Link>
+          </Link> */}
           <Link to="/cashier/transactions" className="action-btn">
             View All Transactions
           </Link>

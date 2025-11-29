@@ -74,9 +74,9 @@ const App = () => {
                   <Route path="/cashier" element={<CashierDashboard />} />
                   <Route path="/cashier/create-purchase" element={<CashierCreatePurchasePage />} />
                   <Route path="/cashier/create-user" element={<CashierCreateUserPage />} />
-                  <Route path="/cashier/scan" element={<ScanQRPage />} />
+                  {/* <Route path="/cashier/scan" element={<ScanQRPage />} /> */}
                   <Route path="/cashier/process-redemption" element={<ProcessRedemptionPage />} />
-                  <Route path="/cashier/manual-award" element={<ManualAwardPage />} />
+                  {/* <Route path="/cashier/manual-award" element={<ManualAwardPage />} /> */}
                   <Route path="/cashier/transactions" element={<CashierTransactionsPage />} />
                 </Route>
                 
