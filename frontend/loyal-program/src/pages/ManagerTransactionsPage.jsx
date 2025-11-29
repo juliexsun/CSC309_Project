@@ -53,6 +53,7 @@ const ManagerTransactionsPage = () => {
         promotionIds: t.promotions?.map((p) => p.id) || [],
         relatedId: t.relatedId,
         createdBy: t.createdBy?.utorid,
+        createdAt: t.createdAt,
       }));
 
       setTransactions(results);
@@ -149,6 +150,7 @@ const ManagerTransactionsPage = () => {
                 <table className="transactions-table">
                   <thead>
                     <tr>
+                      <th>Date</th>
                       <th>ID</th>
                       <th>User</th>
                       <th>Type</th>
@@ -163,6 +165,7 @@ const ManagerTransactionsPage = () => {
                         onClick={() => navigate(`/manager/transactions/${tx.id}`)}
                         className="clickable-row"
                       >
+                        <td>{formatDate(tx.createdAt)}</td>
                         <td>#{tx.id}</td>
                         <td>{tx.utorid}</td>
                         <td>

@@ -14,7 +14,7 @@ const formatPromoForRegular = (promo) => ({
   id: promo.id,
   name: promo.name,
   description: promo.description,
-  type: promo.type,
+  type: promo.type === 'onetime' ? 'one-time' : promo.type, // Normalize for frontend
   endTime: promo.endTime,
   minSpending: promo.minSpending,
   rate: promo.rate,
@@ -28,7 +28,7 @@ const formatPromoForManager = (promo) => ({
   id: promo.id,
   name: promo.name,
   description: promo.description,
-  type: promo.type,
+  type: promo.type === 'onetime' ? 'one-time' : promo.type, // Normalize for frontend
   startTime: promo.startTime,
   endTime: promo.endTime,
   minSpending: promo.minSpending,
@@ -81,14 +81,19 @@ const createPromotion = async (req, res, next) => {
  */
 const getPromotions = async (req, res, next) => {
   try {
-    const { name, type, started, ended, page, limit } = req.query;
+    // FIX: Destructure orderBy and order from query
+    const { name, type, started, ended, page, limit, orderBy, order } = req.query;
     const { id: userId, role } = req.auth;
     const now = new Date();
 
     const where = {};
 
     if (name) where.name = { contains: name };
-    if (type) where.type = type;
+    
+    // FIX: Handle 'one-time' -> 'onetime' mapping for filtering
+    if (type) {
+      where.type = type === 'one-time' ? 'onetime' : type;
+    }
     
     if (role === 'regular' || role === 'cashier') {
       // Regular users only see active, available promotions
@@ -112,18 +117,27 @@ const getPromotions = async (req, res, next) => {
     
     const skip = (page - 1) * limit;
     const total = await prisma.promotion.count({ where });
+
+    // FIX: Dynamic Sorting logic
+    const sortField = orderBy || 'startTime';
+    const sortDirection = order === 'desc' ? 'desc' : 'asc';
+
     const promotions = await prisma.promotion.findMany({
       where,
       skip,
       take: limit,
-      orderBy: { startTime: 'asc' },
+      // FIX: Use dynamic sort instead of hardcoded
+      orderBy: { [sortField]: sortDirection },
     });
     
     const results = promotions.map(promo => {
+       // Helper to normalize type for response
+       const normalizedType = promo.type === 'onetime' ? 'one-time' : promo.type;
+
        const common = {
          id: promo.id,
          name: promo.name,
-         type: promo.type,
+         type: normalizedType,
          endTime: promo.endTime,
          minSpending: promo.minSpending,
          rate: promo.rate,
@@ -202,12 +216,12 @@ const updatePromotion = async (req, res, next) => {
       const restrictedFields = ['name', 'description', 'type', 'startTime', 'minSpending', 'rate', 'points'];
       for (const field of restrictedFields) {
         if (data[field] !== undefined) {
-          return next(BadRequest(`Cannot update '${field}' after the promotion's original start time.`)); // [cite: 362]
+          return next(BadRequest(`Cannot update '${field}' after the promotion's original start time.`)); 
         }
       }
     }
     if (originalEndTime <= now && data.endTime !== undefined) {
-      return next(BadRequest("Cannot update 'endTime' after the promotion's original end time.")); // [cite: 363]
+      return next(BadRequest("Cannot update 'endTime' after the promotion's original end time.")); 
     }
     
     // Validate new times
@@ -234,17 +248,7 @@ const updatePromotion = async (req, res, next) => {
       data: dataToUpdate,
     });
     
-    // Format response
-    const response = {
-      id: updatedPromotion.id,
-      name: updatedPromotion.name,
-      type: updatedPromotion.type,
-    };
-    for (const key of Object.keys(dataToUpdate)) {
-      response[key] = updatedPromotion[key];
-    }
-    
-    res.status(200).json(response);
+    res.status(200).json(formatPromoForManager(updatedPromotion));
   } catch (err) {
     next(err);
   }

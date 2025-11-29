@@ -20,7 +20,7 @@ const ManagePromotionsPage = () => {
   });
 
   // Filters, sorting, and pagination
-  const [filters, setFilters] = useState({ type: '', active: '' });
+  const [filters, setFilters] = useState({ type: '', active: '', name: '' });
   const [sortBy, setSortBy] = useState('endTime'); // default sort
   const [sortOrder, setSortOrder] = useState('asc'); // or 'desc'
   const [page, setPage] = useState(1);
@@ -31,7 +31,11 @@ const ManagePromotionsPage = () => {
 
 
   useEffect(() => {
-    fetchPromotions();
+    // Debounce search slightly
+    const timer = setTimeout(() => {
+        fetchPromotions();
+    }, 300);
+    return () => clearTimeout(timer);
   }, [filters, sortBy, sortOrder, page, limit]);
 
   const fetchPromotions = async () => {
@@ -44,6 +48,7 @@ const ManagePromotionsPage = () => {
         page,
         type: filters.type || undefined,
         active: filters.active || undefined,
+        name: filters.name || undefined,
         orderBy: sortBy,
         order: sortOrder
       };
@@ -78,7 +83,12 @@ const ManagePromotionsPage = () => {
       setFormData({
         name: '',
         description: '',
-        endTime: ''
+        type: 'automatic',
+        startTime: new Date().toISOString().slice(0,16),
+        endTime: '',
+        minSpending: 0,
+        rate: 0,
+        points: 0
       });
       fetchPromotions();
       
@@ -208,6 +218,19 @@ const ManagePromotionsPage = () => {
 
       {/* Filters & Sorting */}
       <div className="filters-bar">
+        <div className="filter-group">
+          <label htmlFor="nameFilter">Search:</label>
+          <input 
+            type="text" 
+            name="name" 
+            id="nameFilter"
+            value={filters.name} 
+            onChange={handleFilterChange} 
+            placeholder="Search by Name..."
+            style={{ padding: '0.6rem', borderRadius: '4px', border: '1px solid #ddd' }}
+          />
+        </div>
+
         <div className="filter-group">
           <label htmlFor="typeFilter">Type:</label>
           <select name="type" value={filters.type} onChange={handleFilterChange} id="typeFilter">
@@ -405,7 +428,7 @@ const ManagePromotionsPage = () => {
                     </div>
                     <p className="promotion-description">{promotion.description}</p>
                     <p className="promotion-time">
-                      Ends: {formatDateTime(promotion.endTime)}
+                      Type: <strong>{promotion.type}</strong> | Ends: {formatDateTime(promotion.endTime)}
                     </p>
                   </div>
                   <div className="promotion-actions">
@@ -436,7 +459,7 @@ const ManagePromotionsPage = () => {
             >
               Previous
             </button>
-            <span className="page-info">Page {page} of {Math.ceil(totalCount / limit)}</span>
+            <span className="page-info">Page {page} of {Math.ceil(totalCount / limit) || 1}</span>
             <button
               className="page-btn"
               disabled={page >= Math.ceil(totalCount / limit)}

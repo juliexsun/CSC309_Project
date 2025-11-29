@@ -209,10 +209,38 @@ export const promotionAPI = {
     apiClient.delete(`/promotions/${promotionId}`),
 };
 
+
+// ===== Notification APIs =====
+export const notificationAPI = {
+  // Get my notifications
+  // GET /notifications?read=&page=&limit=
+  getMyNotifications: (params) =>
+    apiClient.get(`/notifications`, {
+      params,
+      withCredentials: true,
+    }),
+
+  markRead: (id, read = true) =>
+    apiClient.patch(
+      `/notifications/${id}/read`,
+      { read },
+      { withCredentials: true }
+    ),
+
+  markAllRead: () =>
+    apiClient.patch(
+      `/notifications/read`,
+      {},
+      { withCredentials: true }
+    ),
+};
+
+
 export default {
   auth: authAPI,
   user: userAPI,
   transaction: transactionAPI,
   event: eventAPI,
   promotion: promotionAPI,
+  notification: notificationAPI,
 };

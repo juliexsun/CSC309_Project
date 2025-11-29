@@ -14,12 +14,18 @@ const MyTransactionsPage = () => {
   
   // Filter state
   const [filterType, setFilterType] = useState('all');
-  const [sortOrder, setSortOrder] = useState('desc');
+  const [sortOrder, setSortOrder] = useState('createdAt_desc'); // Default sort
+  const [remarkSearch, setRemarkSearch] = useState(''); // Search state
 
+  // Debounce for search
   useEffect(() => {
-    fetchTransactions();
+    const timer = setTimeout(() => {
+      fetchTransactions();
+    }, 500); // 500ms delay for typing
+
+    return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPage, filterType, sortOrder]);
+  }, [currentPage, filterType, sortOrder, remarkSearch]);
 
   const fetchTransactions = async () => {
     try {
@@ -29,11 +35,16 @@ const MyTransactionsPage = () => {
       const params = {
         page: currentPage,
         limit: itemsPerPage,
-        sort: `createdAt_${sortOrder}`
+        sort: sortOrder
       };
       
       if (filterType !== 'all') {
         params.type = filterType;
+      }
+      
+      // Add search param if it exists
+      if (remarkSearch.trim()) {
+        params.remark = remarkSearch;
       }
 
       const response = await transactionAPI.getMyTransactions(params);
@@ -86,6 +97,11 @@ const MyTransactionsPage = () => {
     setSortOrder(e.target.value);
     setCurrentPage(1); // Reset to first page when sort changes
   };
+  
+  const handleSearchChange = (e) => {
+    setRemarkSearch(e.target.value);
+    setCurrentPage(1); // Reset to first page when search changes
+  };
 
   const handlePreviousPage = () => {
     if (currentPage > 1) {
@@ -105,6 +121,20 @@ const MyTransactionsPage = () => {
 
       {/* Filters */}
       <div className="filters-bar">
+        {/* Search Input */}
+        <div className="filter-group">
+          <label htmlFor="remarkSearch">Search:</label>
+          <input
+            id="remarkSearch"
+            type="text"
+            value={remarkSearch}
+            onChange={handleSearchChange}
+            placeholder="Search by remark..."
+            className="filter-input" // You might need to add this class to CSS or reuse existing input styles
+            style={{ padding: '8px 12px', border: '1px solid #ddd', borderRadius: '5px', fontSize: '0.95rem' }}
+          />
+        </div>
+
         <div className="filter-group">
           <label htmlFor="typeFilter">Type:</label>
           <select 
@@ -130,8 +160,10 @@ const MyTransactionsPage = () => {
             onChange={handleSortChange}
             className="filter-select"
           >
-            <option value="desc">Newest First</option>
-            <option value="asc">Oldest First</option>
+            <option value="createdAt_desc">Date (Newest)</option>
+            <option value="createdAt_asc">Date (Oldest)</option>
+            <option value="amount_desc">Amount (High-Low)</option>
+            <option value="amount_asc">Amount (Low-High)</option>
           </select>
         </div>
       </div>
@@ -149,8 +181,8 @@ const MyTransactionsPage = () => {
       ) : transactions.length === 0 ? (
         <div className="empty-state">
           <p>No transactions found.</p>
-          {filterType !== 'all' && (
-            <p>Try changing the filter to see more results.</p>
+          {(filterType !== 'all' || remarkSearch) && (
+            <p>Try changing the filters or search to see more results.</p>
           )}
         </div>
       ) : (

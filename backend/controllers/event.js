@@ -8,6 +8,9 @@ const {
   Gone,
 } = require('../utils/errors');
 
+const { sendNotification } = require("../utils/sendNotification");
+const { sendNotificationToMany } = require("../utils/sendNotification");
+
 /**
  * Helper function to check if a user is an organizer for an event.
  */
@@ -369,6 +372,11 @@ const updateEvent = async (req, res, next) => {
     const updatedEvent = await prisma.event.update({
       where: { id: eventId },
       data: dataToUpdate,
+      include: {
+        guests: {
+          select: { userId: true }, // 只要 userId 就行
+        },
+      },
     });
     
     // Format response to only include updated fields + key info
@@ -384,6 +392,22 @@ const updateEvent = async (req, res, next) => {
         response[key] = updatedEvent[key];
       }
     }
+
+    // Send notifications
+    const io = req.app.get("io");
+    console.log('>>> io in updateEvent:', !!io);
+
+    await sendNotification(userId, "success", `You updated the event '${updatedEvent.name}'.`);
+
+    const guestUserIds = updatedEvent.guests.map((g) => g.userId);
+    if (guestUserIds.length > 0) {
+      await sendNotificationToMany(
+        guestUserIds,
+        "info",
+        `Event "${updatedEvent.name}" has been updated.`
+      );
+    }
+    
     
     res.status(200).json(response);
   } catch (err) {

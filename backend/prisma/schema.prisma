@@ -27,6 +27,30 @@ enum PromotionType {
   onetime @map("one-time")
 }
 
+enum NotificationType {
+  info
+  success
+  warning
+  error
+}
+
+model Notification {
+  id        Int              @id @default(autoincrement())
+
+  // which user this notification belongs to
+  userId    Int
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // notification content
+  type      NotificationType @default(info)  // "info" | "success" | "warning" | "error"
+  message   String                            // text content
+
+  // status & time
+  read      Boolean          @default(false) // whether read
+  createdAt DateTime         @default(now()) // creation time
+}
+
+
 model User {
   id        Int      @id @default(autoincrement())
   utorid    String   @unique
@@ -55,6 +79,9 @@ model User {
 
   // One-time promotions this user has used
   usedPromotions  Promotion[] @relation("UsedPromotions")
+
+  // Notifications for this user
+  notifications Notification[]
 }
 
 model PasswordReset {
