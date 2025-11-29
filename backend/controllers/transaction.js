@@ -369,6 +369,7 @@ const getTransactionById = async (req, res, next) => {
       suspicious: transaction.suspicious,
       remark: transaction.remark,
       createdBy: transaction.createdBy.utorid,
+      createdAt: transaction.createdAt,
       relatedId: transaction.relatedId
     });
   } catch (err) {
