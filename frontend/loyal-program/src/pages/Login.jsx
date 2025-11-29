@@ -100,13 +100,7 @@ const Login = () => {
         </form>
 
         <div className="auth-links">
-          <button 
-            type="button" 
-            className="link-button" 
-            onClick={() => navigate('/register')}
-          >
-            Register
-          </button>
+          
           <button 
             type="button" 
             className="link-button" 

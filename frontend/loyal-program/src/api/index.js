@@ -5,8 +5,8 @@ export const authAPI = {
   login: (utorid, password) => 
     apiClient.post('/auth/tokens', { utorid, password }),
   
-  requestReset: (utorid) => 
-    apiClient.post('/auth/resets', { utorid }),
+  requestReset: (utorid, email) => 
+    apiClient.post('/auth/resets', { utorid, email }),
   
   performReset: (resetToken, utorid, password) => 
     apiClient.post(`/auth/resets/${resetToken}`, { utorid, password }),

@@ -3,7 +3,6 @@ const express = require("express");
 const router = express.Router();
 const Stripe = require("stripe");
 
-require('dotenv').config(); // Load environment variables
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY); // DO NOT expose this key in frontend
 
 router.post("/create-checkout-session", async (req, res) => {

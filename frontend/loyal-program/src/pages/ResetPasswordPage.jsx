@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { authAPI } from "../api";
 import "./ResetPasswordPage.css";
 
 const ResetPasswordPage = () => {
   const navigate = useNavigate();
 
   const [utorid, setUtorid] = useState("");
-  const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [email, setEmail] = useState("");
   const [verificationCode, setVerificationCode] = useState("");
@@ -36,10 +36,8 @@ const ResetPasswordPage = () => {
     
     try {
       // TODO: Integrate with backend API to send verification code
-      // await authAPI.sendPasswordResetCode(email);
-      
-      // Simulating API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      console.log("in frontend", email);
+      await authAPI.requestReset(utorid, email);
       
       setCodeSent(true);
       setSuccess("Verification code sent to your email!");
@@ -57,18 +55,13 @@ const ResetPasswordPage = () => {
     setSuccess("");
 
     // Validation
-    if (!utorid || !oldPassword || !newPassword || !email || !verificationCode) {
+    if (!utorid || !newPassword || !email || !verificationCode) {
       setError("Please fill in all fields");
       return;
     }
 
     if (newPassword.length < 8) {
       setError("New password must be at least 8 characters long");
-      return;
-    }
-
-    if (oldPassword === newPassword) {
-      setError("New password must be different from old password");
       return;
     }
 
@@ -81,13 +74,11 @@ const ResetPasswordPage = () => {
 
     try {
       // TODO: Integrate with backend API for password reset
-      // const response = await authAPI.resetPassword({
-      //   utorid,
-      //   oldPassword,
-      //   newPassword,
-      //   email,
-      //   verificationCode
-      // });
+      await authAPI.performReset(
+        verificationCode, // resetToken
+        utorid,
+        newPassword
+      );
       
       // Simulating API call
       await new Promise(resolve => setTimeout(resolve, 1500));
@@ -120,19 +111,6 @@ const ResetPasswordPage = () => {
               value={utorid}
               onChange={(e) => setUtorid(e.target.value)}
               placeholder="Enter your UTORid"
-              disabled={loading}
-              required
-            />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="old-password">Old Password</label>
-            <input
-              id="old-password"
-              type="password"
-              value={oldPassword}
-              onChange={(e) => setOldPassword(e.target.value)}
-              placeholder="Enter your old password"
               disabled={loading}
               required
             />

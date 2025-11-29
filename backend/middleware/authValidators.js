@@ -16,8 +16,13 @@ exports.validateLogin = (req, res, next) => {
 
 // POST /auth/resets
 exports.validateRequestReset = (req, res, next) => {
+  const { utorid, email } = req.body;
+
   if (!req.body.utorid) {
     return next(BadRequest('utorid is required.'));
+  }
+  if (!req.body.email) {
+    return next(BadRequest('email is required.'));
   }
   if (typeof req.body.utorid !== 'string') {
     return next(BadRequest('utorid must be a string.'));

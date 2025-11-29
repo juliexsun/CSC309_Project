@@ -1,5 +1,7 @@
 'use strict';
 
+const sendResetEmail = require("../services/emailService");
+
 const prisma = require('../db/prisma');
 const { v4: uuidv4 } = require('uuid');
 const {
@@ -61,10 +63,14 @@ const login = async (req, res, next) => {
  */
 const requestReset = async (req, res, next) => {
   try {
-    const { utorid } = req.body;
+    const { utorid, email } = req.body;
 
-    const user = await prisma.user.findUnique({
-      where: { utorid },
+    // 1. Find user with BOTH utorid and email
+    const user = await prisma.user.findFirst({
+      where: {
+        utorid,
+        email,
+      },
     });
 
     if (!user) {
@@ -87,6 +93,9 @@ const requestReset = async (req, res, next) => {
     // Generate a NEW reset token
     const token = uuidv4();
     const expiresAt = new Date(Date.now() + 60 * 60 * 1000); // 1 hour from now
+
+    // send email
+    await sendResetEmail({ to: email, utorid, resetToken: token });
 
     // Create the new token record
     await prisma.passwordReset.create({
