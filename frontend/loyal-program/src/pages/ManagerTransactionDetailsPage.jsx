@@ -124,6 +124,11 @@ const ManagerTransactionDetailsPage = () => {
             </div>
 
             <div className="transaction-card-row">
+              <span className="transaction-card-label">Date:</span>
+              <span className="transaction-card-value">{new Date(tx.createdAt).toLocaleString()}</span>
+            </div>
+
+            <div className="transaction-card-row">
               <span className="transaction-card-label">Related Tx:</span>
               <span className="transaction-card-value">
                 {tx.relatedId || "None"}
