@@ -25,7 +25,7 @@ const CashierDashboard = () => {
       
       const response = await transactionAPI.getTransactions({ 
         limit: 10,
-        sortBy: 'time',
+        sortBy: 'createdAt', // FIX: sort by createdAt, not time
         order: 'desc'
       });
       
@@ -51,8 +51,10 @@ const CashierDashboard = () => {
     let weekPoints = 0;
 
     transactions.forEach(tx => {
-      const txDate = new Date(tx.time);
-      const points = Math.abs(tx.points);
+      // FIX: Use createdAt instead of time
+      const txDate = new Date(tx.createdAt || tx.time);
+      // FIX: Use amount instead of points
+      const points = Math.abs(tx.amount || 0);
 
       if (txDate >= weekStart) {
         weekCount++;
@@ -69,6 +71,7 @@ const CashierDashboard = () => {
   };
 
   const formatDate = (dateString) => {
+    if (!dateString) return 'N/A';
     const date = new Date(dateString);
     return date.toLocaleString('en-US', {
       month: 'short',
@@ -122,15 +125,15 @@ const CashierDashboard = () => {
           <Link to="/cashier/create-user" className="action-btn">
             Create User
           </Link>
-          <Link to="/cashier/scan" className="action-btn primary">
+          {/* <Link to="/cashier/scan" className="action-btn primary">
             Scan QR Code
-          </Link>
+          </Link> */}
           <Link to="/cashier/process-redemption" className="action-btn">
             Process Redemption
           </Link>
-          <Link to="/cashier/manual-award" className="action-btn">
+          {/* <Link to="/cashier/manual-award" className="action-btn">
             Manual Award
-          </Link>
+          </Link> */}
           <Link to="/cashier/transactions" className="action-btn">
             View All Transactions
           </Link>
@@ -155,15 +158,21 @@ const CashierDashboard = () => {
               <tbody>
                 {recentTransactions.map((tx) => (
                   <tr key={tx.id}>
-                    <td>{formatDate(tx.time)}</td>
-                    <td>{tx.User?.name || tx.User?.utorid || 'Unknown'}</td>
+                    {/* FIX: Use createdAt */}
+                    <td>{formatDate(tx.createdAt || tx.time)}</td>
+                    
+                    {/* FIX: Use utorid directly */}
+                    <td>{tx.utorid || (tx.user && tx.user.utorid) || 'Unknown'}</td>
+                    
                     <td>
                       <span className={`type-badge ${tx.type}`}>
-                        {tx.type}
+                        {tx.type ? tx.type.replace('_', ' ') : 'Unknown'}
                       </span>
                     </td>
-                    <td className={tx.points > 0 ? 'positive' : 'negative'}>
-                      {tx.points > 0 ? '+' : ''}{tx.points}
+
+                    {/* FIX: Use amount instead of points */}
+                    <td className={tx.amount > 0 ? 'positive' : 'negative'}>
+                      {tx.amount > 0 ? '+' : ''}{tx.amount}
                     </td>
                   </tr>
                 ))}

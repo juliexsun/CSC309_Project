@@ -25,7 +25,7 @@ const RegularDashboard = () => {
           limit: 10,
           sort: 'createdAt_desc'
         });
-        setRecentTransactions(transactionsResponse.data.transactions || []);
+        setRecentTransactions(transactionsResponse.data.results || []);
 
       } catch (err) {
         console.error('Error fetching dashboard data:', err);

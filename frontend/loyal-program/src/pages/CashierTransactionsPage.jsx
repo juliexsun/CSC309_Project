@@ -56,6 +56,7 @@ const CashierTransactionsPage = () => {
   };
 
   const formatDate = (dateString) => {
+    if (!dateString) return 'N/A';
     const date = new Date(dateString);
     return date.toLocaleString('en-US', {
       year: 'numeric',
@@ -152,17 +153,21 @@ const CashierTransactionsPage = () => {
                     {transactions.map((tx) => (
                       <tr key={tx.id}>
                         <td>#{tx.id}</td>
-                        <td>{formatDate(tx.time)}</td>
-                        <td>{tx.User?.name || tx.User?.utorid || `User #${tx.userId}`}</td>
+                        <td>{formatDate(tx.createdAt || tx.time)}</td>
+                        
+                        <td>{tx.utorid || (tx.user && tx.user.utorid) || `User #${tx.userId}`}</td>
+                        
                         <td>
                           <span className={`type-badge ${tx.type}`}>
-                            {tx.type.replace('_', ' ')}
+                            {tx.type ? tx.type.replace('_', ' ') : 'Unknown'}
                           </span>
                         </td>
-                        <td className={tx.points > 0 ? 'positive' : 'negative'}>
-                          {tx.points > 0 ? '+' : ''}{tx.points}
+                        
+                        <td className={tx.amount > 0 ? 'positive' : 'negative'}>
+                          {tx.amount > 0 ? '+' : ''}{tx.amount}
                         </td>
-                        <td className="note-cell">{tx.note || '-'}</td>
+                        
+                        <td className="note-cell">{tx.remark || tx.note || '-'}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -175,31 +180,31 @@ const CashierTransactionsPage = () => {
                   <div key={tx.id} className="transaction-card">
                     <div className="transaction-card-header">
                       <span className="transaction-card-id">#{tx.id}</span>
-                      <span className={`transaction-card-points ${tx.points > 0 ? 'positive' : 'negative'}`}>
-                        {tx.points > 0 ? '+' : ''}{tx.points}
+                      <span className={`transaction-card-points ${tx.amount > 0 ? 'positive' : 'negative'}`}>
+                        {tx.amount > 0 ? '+' : ''}{tx.amount}
                       </span>
                     </div>
                     <div className="transaction-card-body">
                       <div className="transaction-card-row">
                         <span className="transaction-card-label">Type:</span>
                         <span className={`type-badge ${tx.type}`}>
-                          {tx.type.replace('_', ' ')}
+                          {tx.type ? tx.type.replace('_', ' ') : 'Unknown'}
                         </span>
                       </div>
                       <div className="transaction-card-row">
                         <span className="transaction-card-label">User:</span>
                         <span className="transaction-card-value">
-                          {tx.User?.name || tx.User?.utorid || `User #${tx.userId}`}
+                          {tx.utorid || (tx.user && tx.user.utorid) || `User #${tx.userId}`}
                         </span>
                       </div>
                       <div className="transaction-card-row">
                         <span className="transaction-card-label">Date:</span>
-                        <span className="transaction-card-value">{formatDate(tx.time)}</span>
+                        <span className="transaction-card-value">{formatDate(tx.createdAt || tx.time)}</span>
                       </div>
-                      {tx.note && (
+                      {(tx.remark || tx.note) && (
                         <div className="transaction-card-row">
                           <span className="transaction-card-label">Note:</span>
-                          <span className="transaction-card-value">{tx.note}</span>
+                          <span className="transaction-card-value">{tx.remark || tx.note}</span>
                         </div>
                       )}
                     </div>
