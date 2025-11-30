@@ -1,13 +1,27 @@
 import axios from 'axios';
 
 // Create axios instance with base configuration
+// const apiClient = axios.create({
+//   baseURL: 'http://localhost:3000', // Backend server URL
+//   headers: {
+//     'Content-Type': 'application/json',
+//   },
+//   withCredentials: true,
+// });
+
+const API_BASE_URL =
+import.meta.env.VITE_BACKEND_WS_URL || 'http://localhost:3000';
+
+console.log("🔧 API BASE URL =", API_BASE_URL);
+
 const apiClient = axios.create({
-  baseURL: 'http://localhost:3000', // Backend server URL
+  baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },
   withCredentials: true,
 });
+
 
 // Request interceptor to add auth token
 apiClient.interceptors.request.use(
