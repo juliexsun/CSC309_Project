@@ -52,6 +52,46 @@ function getEventStatus(startTime, endTime) {
 }
 
 /**
+ * Determine which fields of an event are editable
+ * based on its current status.
+ */
+function getEditableEventFields(status) {
+  // Base: nothing editable
+  const base = {
+    name: false,
+    description: false,
+    location: false,
+    startTime: false,
+    endTime: false,
+    capacity: false,
+  };
+
+  if (status === 'upcoming') {
+    // Not started yet: all fields editable
+    return {
+      name: true,
+      description: true,
+      location: true,
+      startTime: true,
+      endTime: true,
+      capacity: true,
+    };
+  }
+
+  if (status === 'ongoing') {
+    // Already started but not ended: only endTime editable
+    return {
+      ...base,
+      endTime: true,
+    };
+  }
+
+  // past: event has ended, no edits allowed on frontend or backend
+  return base;
+}
+
+
+/**
  * Render the RSVP section with correct buttons and messaging.
  *
  * @param {boolean} canRSVP - Whether the event is upcoming or ongoing.
@@ -266,6 +306,7 @@ function OrganizerEditEventSection({
   setEditFormData,
   actionLoading,
   handleUpdateEvent,
+  editableFields,
 }) {
   if (!canEditEvent) return null;
 
@@ -296,6 +337,7 @@ function OrganizerEditEventSection({
                     setEditFormData(prev => ({ ...prev, name: e.target.value }))
                   }
                   required
+                  disabled={!editableFields?.name}
                 />
               </div>
 
@@ -309,6 +351,7 @@ function OrganizerEditEventSection({
                     setEditFormData(prev => ({ ...prev, location: e.target.value }))
                   }
                   required
+                  disabled={!editableFields?.location}
                 />
               </div>
             </div>
@@ -324,6 +367,7 @@ function OrganizerEditEventSection({
                   setEditFormData(prev => ({ ...prev, description: e.target.value }))
                 }
                 required
+                disabled={!editableFields?.description}
               />
             </div>
 
@@ -339,6 +383,7 @@ function OrganizerEditEventSection({
                     setEditFormData(prev => ({ ...prev, startTime: e.target.value }))
                   }
                   required
+                  disabled={!editableFields?.startTime}
                 />
               </div>
 
@@ -352,6 +397,7 @@ function OrganizerEditEventSection({
                     setEditFormData(prev => ({ ...prev, endTime: e.target.value }))
                   }
                   required
+                  disabled={!editableFields?.endTime}
                 />
               </div>
             </div>
@@ -369,6 +415,7 @@ function OrganizerEditEventSection({
                     setEditFormData(prev => ({ ...prev, capacity: e.target.value }))
                   }
                   placeholder="Leave empty for unlimited"
+                  disabled={!editableFields?.capacity}
                 />
               </div>
             </div>
@@ -681,7 +728,6 @@ const EventDetailPage = () => {
   };
 
 
-
   /**
    * Handle organizer updating event details.
    * This uses PATCH /events/:eventId.
@@ -694,23 +740,63 @@ const EventDetailPage = () => {
       setError('');
       setSuccessMessage('');
 
-      // Build payload for PATCH /events/:eventId
-      const payload = {
-        name: editFormData.name,
-        description: editFormData.description,
-        location: editFormData.location,
-        // Convert datetime-local back to ISO string if provided
-        startTime: editFormData.startTime
-          ? new Date(editFormData.startTime).toISOString()
-          : undefined,
-        endTime: editFormData.endTime
-          ? new Date(editFormData.endTime).toISOString()
-          : undefined,
-        capacity:
+      // Determine current event status
+      const statusForUpdate = getEventStatus(event.startTime, event.endTime);
+      const editableForUpdate = getEditableEventFields(statusForUpdate);
+
+      // Build payload for only editable fields
+      const payload = {};
+
+      if (editableForUpdate.name) {
+        payload.name = editFormData.name;
+      }
+
+      if (editableForUpdate.description) {
+        payload.description = editFormData.description;
+      }
+
+      if (editableForUpdate.location) {
+        payload.location = editFormData.location;
+      }
+
+      if (editableForUpdate.startTime && editFormData.startTime) {
+        payload.startTime = new Date(editFormData.startTime).toISOString();
+      }
+
+      if (editableForUpdate.endTime && editFormData.endTime) {
+        payload.endTime = new Date(editFormData.endTime).toISOString();
+      }
+
+      if (editableForUpdate.capacity) {
+        payload.capacity =
           editFormData.capacity === '' || editFormData.capacity === null
             ? null
-            : parseInt(editFormData.capacity, 10)
-      };
+            : parseInt(editFormData.capacity, 10);
+      }
+
+      if (Object.keys(payload).length === 0) {
+        setError('This event can no longer be edited in its current state.');
+        setActionLoading(false);
+        return;
+      }
+
+      // // Build payload for PATCH /events/:eventId
+      // const payload = {
+      //   name: editFormData.name,
+      //   description: editFormData.description,
+      //   location: editFormData.location,
+      //   // Convert datetime-local back to ISO string if provided
+      //   startTime: editFormData.startTime
+      //     ? new Date(editFormData.startTime).toISOString()
+      //     : undefined,
+      //   endTime: editFormData.endTime
+      //     ? new Date(editFormData.endTime).toISOString()
+      //     : undefined,
+      //   capacity:
+      //     editFormData.capacity === '' || editFormData.capacity === null
+      //       ? null
+      //       : parseInt(editFormData.capacity, 10)
+      // };
 
       // Send update request
       await eventAPI.updateEvent(eventId, payload);
@@ -731,8 +817,6 @@ const EventDetailPage = () => {
       setActionLoading(false);
     }
   };
-
-
 
 
 
@@ -766,7 +850,8 @@ const EventDetailPage = () => {
   const canRSVP = !userIsOrganizer && (status === 'upcoming' || status === 'ongoing');
   const canAddGuest = userIsOrganizer && (status === 'upcoming' || status === 'ongoing');
   const canEditEvent = userIsOrganizer && (status === 'upcoming' || status === 'ongoing');
-  const canAwardPoints = userIsOrganizer && event.pointsRemain !== undefined;
+  const canAwardPoints = userIsOrganizer && event.pointsRemain !== undefined && (status === 'past' || status === 'ongoing');
+  const editableFields = getEditableEventFields(status);
 
 
 
@@ -924,6 +1009,7 @@ const EventDetailPage = () => {
             setEditFormData={setEditFormData}
             actionLoading={actionLoading}
             handleUpdateEvent={handleUpdateEvent}
+            editableFields={editableFields}
           />
 
 
