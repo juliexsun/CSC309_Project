@@ -41,12 +41,37 @@ app.use(express.json());
 
 // Enable Cross-Origin Resource Sharing
 // Set up cors to allow requests from your React frontend
-app.use(cors({
-origin: 'http://localhost:5173',
-methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-allowedHeaders: ['Content-Type', 'Authorization'],
-credentials: true
-}));
+// app.use(cors({
+// origin: 'http://localhost:5173',
+// methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+// allowedHeaders: ['Content-Type', 'Authorization'],
+// credentials: true
+// }));
+
+const allowedOrigins = [
+  "http://localhost:5173",
+];
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+    
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.includes(origin)) return callback(null, true);
+ 
+      if (origin.endsWith("csc309-project.pages.dev")) {
+        return callback(null, true);
+      }
+
+      return callback(new Error("Not allowed by CORS"), false);
+    },
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
+  })
+);
+
 
 // Serve static files from the 'uploads' directory
 // This allows accessing avatar images via URLs like /uploads/avatars/image.png
