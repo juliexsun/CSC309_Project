@@ -3,22 +3,23 @@
 
 require('dotenv').config();
 
-const port = (() => {
-    const args = process.argv;
+// const port = (() => {
+//     const args = process.argv;
 
-    if (args.length !== 3) {
-        console.error("usage: node index.js port");
-        process.exit(1);
-    }
+//     if (args.length !== 3) {
+//         console.error("usage: node index.js port");
+//         process.exit(1);
+//     }
 
-    const num = parseInt(args[2], 10);
-    if (isNaN(num)) {
-        console.error("error: argument must be an integer.");
-        process.exit(1);
-    }
+//     const num = parseInt(args[2], 10);
+//     if (isNaN(num)) {
+//         console.error("error: argument must be an integer.");
+//         process.exit(1);
+//     }
 
-    return num;
-})();
+//     return num;
+// })();
+const port = process.env.PORT || 3000;
 
 const express = require("express");
 const cors = require('cors'); //
@@ -40,12 +41,37 @@ app.use(express.json());
 
 // Enable Cross-Origin Resource Sharing
 // Set up cors to allow requests from your React frontend
-app.use(cors({
-origin: 'http://localhost:5173',
-methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-allowedHeaders: ['Content-Type', 'Authorization'],
-credentials: true
-}));
+// app.use(cors({
+// origin: 'http://localhost:5173',
+// methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+// allowedHeaders: ['Content-Type', 'Authorization'],
+// credentials: true
+// }));
+
+const allowedOrigins = [
+  "http://localhost:5173",
+];
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+    
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.includes(origin)) return callback(null, true);
+ 
+      if (origin.endsWith("csc309-project.pages.dev")) {
+        return callback(null, true);
+      }
+
+      return callback(new Error("Not allowed by CORS"), false);
+    },
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
+  })
+);
+
 
 // Serve static files from the 'uploads' directory
 // This allows accessing avatar images via URLs like /uploads/avatars/image.png
@@ -79,14 +105,42 @@ const { setSocketIO } = require("./utils/sendNotification");
 const httpServer = http.createServer(app);
 
 // initialize socket.io
+// const io = new Server(httpServer, {
+//   cors: {
+//     origin: 'http://localhost:5173', // React dev server
+//     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+//     allowedHeaders: ['Content-Type', 'Authorization'],
+//     credentials: true
+//   }
+// });
+
+
+const allowedSocketOrigins = [
+  "http://localhost:5173",
+];
+
 const io = new Server(httpServer, {
   cors: {
-    origin: 'http://localhost:5173', // React dev server
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-    credentials: true
-  }
+    origin: (origin, callback) => {
+     
+      if (!origin) return callback(null, true);
+
+      if (allowedSocketOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      if (origin.endsWith("csc309-project.pages.dev")) {
+        return callback(null, true);
+      }
+
+      return callback(new Error("Not allowed by CORS (socket.io)"), false);
+    },
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
+  },
 });
+
 
 
 setSocketIO(io);

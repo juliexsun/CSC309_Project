@@ -4,6 +4,7 @@ import { useAuth } from "../hooks/useAuth";
 import { createSocket } from "../utils/socket";
 
 const SocketContext = createContext(null);
+const isDev = import.meta.env.DEV;
 
 export function SocketProvider({ children }) {
   const [socket, setSocket] = useState(null);
@@ -35,7 +36,7 @@ export function SocketProvider({ children }) {
   useEffect(() => {
     if (!socket || !isAuthenticated || !user) return;
 
-    console.log("🔐 Sending auth to socket:", user.id);
+    if (isDev) console.log("🔐 Sending auth to socket:", user.id);
     socket.emit("auth", user.id);
 
   }, [socket, isAuthenticated, user]);
