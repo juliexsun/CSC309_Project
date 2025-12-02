@@ -240,14 +240,6 @@ const ManagePromotionsPage = () => {
           </select>
         </div>
 
-        <div className="filter-group">
-          <label htmlFor="activeFilter">Status:</label>
-          <select name="active" value={filters.active} onChange={handleFilterChange} id="activeFilter">
-            <option value="">All</option>
-            <option value="true">Active</option>
-            <option value="false">Expired</option>
-          </select>
-        </div>
 
         <div className="filter-group">
           <label htmlFor="sort">Sort By:</label>

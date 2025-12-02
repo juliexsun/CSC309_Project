@@ -46,7 +46,7 @@ export default function DonateFloatingButton() {
       // Call your backend to create a Checkout Session
       // endpoint: POST /api/stripe/create-checkout-session
       // send amount in cents and optionally metadata
-      const resp = await axios.post("http://localhost:3000/stripe/create-checkout-session", {
+      const resp = await axios.post("https://csc309-project-cdda.onrender.com/stripe/create-checkout-session", {
         amount: finalAmountCents,
         currency: "cad", // or "usd" etc - keep consistent with server
         redirect_url: window.location.href,

@@ -392,13 +392,11 @@ const ManageEventDetailPage = () => {
   const { eventId } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
-
-  
   
   const [event, setEvent] = useState(null);
   const [guests, setGuests] = useState([]);
   const [organizers, setOrganizers] = useState([]);
-  const [userIsOrganizer, setUserIsOrganizer] = useState(false);
+  const [userIsOrganizer, setUserIsOrganizer] = useState(true);
 
   const [isRsvped, setIsRsvped] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -408,6 +406,9 @@ const ManageEventDetailPage = () => {
 
   // Add Guest state
   const [addGuestUtorid, setAddGuestUtorid] = useState('');
+
+  const [selectedEvent, setSelectedEvent] = useState(null);
+  const [guestUtorid, setGuestUtorid] = useState('');
 
 
   // Organizer edit form state
