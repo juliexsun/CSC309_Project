@@ -483,7 +483,7 @@ const EventDetailPage = () => {
     // Fetch event details
     const eventResponse = await eventAPI.getEventById(eventId);
     const eventData = eventResponse.data;
-    console.log('Event data:', eventData);
+    //console.log('Event data:', eventData);
 
     setEvent(eventData);
 
