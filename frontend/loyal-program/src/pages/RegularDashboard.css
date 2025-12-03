@@ -53,6 +53,7 @@
   text-align: center;
   margin: 20px 0;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+  color: #32CD32 !important;
 }
 
 .points-footer {
@@ -62,7 +63,8 @@
 }
 
 .verified {
-  color: #2ecc71;
+  /* color: #2ecc71; */
+  color: #32CD32 !important;
   font-weight: 500;
 }
 

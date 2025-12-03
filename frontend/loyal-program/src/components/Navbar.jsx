@@ -7,11 +7,30 @@ import './Navbar.css';
 const Navbar = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const location = useLocation(); // Gets current URL path
+  const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const { socket } = useSocket();
   const [toast, setToast] = useState(null);
+
+  // Initialize based on URL, but persist it even if we go to neutral pages
+  const [currentViewMode, setCurrentViewMode] = useState(() => {
+    if (location.pathname.startsWith('/manager')) return 'Manager';
+    if (location.pathname.startsWith('/cashier')) return 'Cashier';
+    return 'Regular';
+  });
+
+  // Update view mode only when explicitly navigating to role-specific pages.
+  // no update state for neutral pages like /profile or /notifications.
+  useEffect(() => {
+    if (location.pathname.startsWith('/manager')) {
+      setCurrentViewMode('Manager');
+    } else if (location.pathname.startsWith('/cashier')) {
+      setCurrentViewMode('Cashier');
+    } else if (location.pathname.startsWith('/dashboard') || location.pathname === '/') {
+      setCurrentViewMode('Regular');
+    }
+  }, [location.pathname]);
 
   useEffect(() => {
     if (!socket) return;
@@ -42,33 +61,19 @@ const Navbar = () => {
     setMobileMenuOpen(false);
   };
 
-  if (!user) {
-    return null; 
-  }
+  if (!user) return null;
 
-  // --- LOGIC: Determine Active View based on URL ---
-  const isManagerView = location.pathname.startsWith('/manager');
-  const isCashierView = location.pathname.startsWith('/cashier');
-  
-  // Helper: Get the current "Active View" name for the dropdown
-  const getCurrentViewName = () => {
-    if (isManagerView) return 'Manager';
-    if (isCashierView) return 'Cashier';
-    return 'Regular';
-  };
-
-  // Helper: Get available roles for the dropdown based on user permission
   const getAvailableViews = () => {
-    const views = ['Regular']; // Everyone can see Regular view
+    const views = ['Regular']; 
     if (user.role === 'cashier') views.push('Cashier');
     if (user.role === 'manager') views.push('Cashier', 'Manager');
     if (user.role === 'superuser') views.push('Cashier', 'Manager');
-    return views.reverse(); // Highest priv first
+    return views.reverse();
   };
 
-  // Handler for switching views via dropdown
   const handleViewSwitch = (e) => {
     const selectedView = e.target.value;
+    setCurrentViewMode(selectedView);
     
     if (selectedView === 'Regular') navigate('/dashboard');
     else if (selectedView === 'Cashier') navigate('/cashier');
@@ -77,9 +82,9 @@ const Navbar = () => {
     closeMobileMenu();
   };
 
-  // --- RENDER MENU ITEMS BASED ON CURRENT URL VIEW ---
+  // render menu based on persisted state
   const renderMenuItems = () => {
-    if (isManagerView && (user.role === 'manager' || user.role === 'superuser')) {
+    if (currentViewMode === 'Manager' && (user.role === 'manager' || user.role === 'superuser')) {
       return (
         <>
           <Link to="/manager" className="nav-link" onClick={closeMobileMenu}>Dashboard</Link>
@@ -91,7 +96,7 @@ const Navbar = () => {
       );
     }
 
-    if (isCashierView && (user.role === 'cashier' || user.role === 'manager' || user.role === 'superuser')) {
+    if (currentViewMode === 'Cashier' && (user.role === 'cashier' || user.role === 'manager' || user.role === 'superuser')) {
       return (
         <>
           <Link to="/cashier" className="nav-link" onClick={closeMobileMenu}>Dashboard</Link>
@@ -107,17 +112,17 @@ const Navbar = () => {
 
     // Default: Regular User View
     return (
-        <>
-          <Link to="/dashboard" className="nav-link" onClick={closeMobileMenu}>Dashboard</Link>
-          <Link to="/events" className="nav-link" onClick={closeMobileMenu}>Events</Link>
-          <Link to="/promotions" className="nav-link" onClick={closeMobileMenu}>Promotions</Link>
-          <Link to="/transactions" className="nav-link" onClick={closeMobileMenu}>Transactions</Link>
-          <Link to="/redemptions" className="nav-link" onClick={closeMobileMenu}>Redemptions</Link>
-          <Link to="/transfer" className="nav-link" onClick={closeMobileMenu}>Transfer</Link>
-          <Link to="/my-qr" className="nav-link" onClick={closeMobileMenu}>My QR</Link>
-        </>
-      );
-    }
+      <>
+        <Link to="/dashboard" className="nav-link" onClick={closeMobileMenu}>Dashboard</Link>
+        <Link to="/events" className="nav-link" onClick={closeMobileMenu}>Events</Link>
+        <Link to="/promotions" className="nav-link" onClick={closeMobileMenu}>Promotions</Link>
+        <Link to="/transactions" className="nav-link" onClick={closeMobileMenu}>Transactions</Link>
+        <Link to="/redemptions" className="nav-link" onClick={closeMobileMenu}>Redemptions</Link>
+        <Link to="/transfer" className="nav-link" onClick={closeMobileMenu}>Transfer</Link>
+        <Link to="/my-qr" className="nav-link" onClick={closeMobileMenu}>My QR</Link>
+      </>
+    );
+  };
 
   const availableViews = getAvailableViews();
 
@@ -126,9 +131,7 @@ const Navbar = () => {
     <nav className="navbar">
       <div className="navbar-container">
         <div className="navbar-brand">
-          <Link to="/" className="brand-link">
-            CSSU Loyalty
-          </Link>
+          <Link to="/" className="brand-link">CSSU Loyalty</Link>
         </div>
 
         <button 
@@ -137,9 +140,7 @@ const Navbar = () => {
           aria-label="Toggle navigation menu"
         >
           <span className={`hamburger ${mobileMenuOpen ? 'open' : ''}`}>
-            <span></span>
-            <span></span>
-            <span></span>
+            <span></span><span></span><span></span>
           </span>
         </button>
 
@@ -153,11 +154,11 @@ const Navbar = () => {
             {user.name}
           </Link>
 
-          {/* INTERFACE SWITCHER: Replaces (role) text with a dropdown if multiple views available */}
+          {/* UI RESTORED: Using original <select> dropdown */}
           {availableViews.length > 1 ? (
             <div className="role-selector-wrapper">
               <select 
-                value={getCurrentViewName()} 
+                value={currentViewMode} 
                 onChange={handleViewSwitch}
                 className="role-select-minimal"
                 title="Switch Interface View"
@@ -188,12 +189,12 @@ const Navbar = () => {
       </div>
     </nav>
 
-      {toast && (
-        <div className="notification-toast">
-          <strong>{toast.type}</strong>
-          <div>{toast.message}</div>
-        </div>
-      )}
+    {toast && (
+      <div className="notification-toast">
+        <strong>{toast.type}</strong>
+        <div>{toast.message}</div>
+      </div>
+    )}
     </>
   );
 };
