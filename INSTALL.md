@@ -50,6 +50,7 @@ DATABASE_URL="file:./dev.db"
 PORT=3000
 STRIPE_SECRET_KEY=your_stripe_secret_key_change_this_in_production
 FRONTEND_BASE_URL=your_frontend_url
+RESEND_API_KEY=your_resend_api_key_change_this_in_production
 ```
 
 Do not share the JWT_SECRET or STRIPE_SECRET_KEY with anyone.
@@ -225,7 +226,7 @@ The frontend is built with React and uses Vite as the build tool. These are deve
 All these are standard open source packages and do not require any API keys or external accounts.
 
 ### Resend
-We use Resend for email integration for reset password. Resend verifies domain records to confirm the legitimacy of the sender. However this creates a limitation to the use of this API in this project, since we do not own a domain, we can only send emails to the email address associated with the Resend API account.
+We use Resend for email integration for reset password. Resend verifies domain records to confirm the legitimacy of the sender. However this creates a limitation to the use of this API in this project, since we do not own a domain, we can only send emails to the email address associated with the Resend API account. This service requires an account and an API key.
 You can find out more here: https://resend.com/docs/api-reference/api-keys/create-api-key
 
 ### Stripe
